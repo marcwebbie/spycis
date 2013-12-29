@@ -19,12 +19,9 @@ class ExtractorsTests(unittest.TestCase):
 
         url = "http://www.divxstage.eu/video/v7f6bhbgvcbgw"
         dlurl = extractor.extract(url)
-
         self.assertIsNotNone(dlurl)
-        self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
-    def test_gorillavid(self):
-        pass
+        self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_putlocker(self):
         extractor = extractors.get_extractor(name="putlocker")
@@ -32,14 +29,24 @@ class ExtractorsTests(unittest.TestCase):
 
         url = "http://www.putlocker.com/file/B90D29CBE84B2075"
         dlurl = extractor.extract(url)
-
         self.assertIsNotNone(dlurl)
+
         self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_nowvideo(self):
-        pass
+        extractor = extractors.get_extractor(name="nowvideo")
+        self.assertIsNotNone(extractor)
+
+        url = "http://www.nowvideo.sx/video/02452e9362f53"
+        dlurl = extractor.extract(url)
+        self.assertIsNotNone(dlurl)
+
+        self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_vidbull(self):
+        pass
+
+    def test_gorillavid(self):
         pass
 
 if __name__ == "__main__":
