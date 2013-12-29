@@ -15,7 +15,7 @@ class WrapperTubeplusTests(unittest.TestCase):
 
     def test_tubeplus_search_return_expected_dict(self):
         site = wrappers.get_by_name("tubeplus")
-        search_results = site.search('The Animal Kingdom')
+        search_results = site.search("The Animal Kingdom")
 
         self.assertIsInstance(search_results, list)
         self.assertGreater(len(search_results), 0)
@@ -41,6 +41,14 @@ class WrapperTubeplusTests(unittest.TestCase):
         }
 
         self.assertIn(expected_dict, search_results)
+
+    def test_tubeplus_get_urls_return_valid_urls(self):
+        url = "http://www.tubeplus.me/player/40142/Animal_Kingdom/"
+        site = wrappers.get_by_name("tubeplus")
+        urls = site.get_urls(url)
+
+        for url in urls:
+            self.assertTrue(url.startswith('http://'))
 
 if __name__ == "__main__":
     unittest.main()
