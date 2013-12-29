@@ -22,7 +22,34 @@ class BaseExtractor(object):
         )
 
     def extract(self, video_id_or_url):
-        pass
+        """Information extractors are the classes that, given a URL, extract
+        information about the video (or videos) the URL refers to. This
+        information includes the real video URL, the video title, author and
+        others. The information is stored in a dictionary which is then
+        returned.
+
+        The dictionaries must include the following fields:
+
+            id:             Video identifier.
+            title:          Video title, unescaped.
+            url:            Final video URL.
+            ext:            Video filename extension.
+
+        The following fields are optional:
+
+            thumbnail:      Full URL to a video thumbnail image.
+            description:    One-line video description.
+            uploader:       Full name of the video uploader.
+            upload_date:    Video upload date (YYYYMMDD).
+            uploader_id:    Nickname or id of the video uploader.
+            subtitles:      The subtitle file contents as a dictionary in the format
+                            {language: subtitles}.
+            duration:       Length of the video in seconds, as an integer.
+            webpage_url:    Page url from where video was retrieved
+
+        Unless mentioned otherwise, the fields should be Unicode strings.
+        """
+        raise NotImplementedError("Method extract not overriden by subclass")
 
     def is_valid_host(self, host):
         return host in self.host_list

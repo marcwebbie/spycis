@@ -44,7 +44,19 @@ class ExtractorsTests(unittest.TestCase):
         self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_vidbull(self):
-        pass
+        extractor = extractors.get_extractor(name="vidbull")
+        self.assertIsNotNone(extractor)
+
+        url = "http://vidbull.com/98acfr8i6pq4.html"
+        embed_url = "http://vidbull.com/embed-98acfr8i6pq4.html"
+
+        info = extractor.extract(url)
+        self.assertIsNotNone(info)
+
+        self.assertIn("id", info.keys())
+        self.assertIn("title", info.keys())
+        self.assertIn("url", info.keys())
+        self.assertIn("ext", info.keys())
 
     def test_gorillavid(self):
         pass
