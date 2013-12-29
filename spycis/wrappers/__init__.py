@@ -1,6 +1,5 @@
 import inspect
 import os
-import sys
 import glob
 
 from .common import BaseWrapper
@@ -14,8 +13,7 @@ def _import_all_wrapper_files():
 
 
 def get_all():
-    """Get all classes with names ending with 'Wrapper' from
-    the module wrappers directory return and generator
+    """Get all subclasses of BaseWrapper from module and return and generator
     """
 
     _import_all_wrapper_files()
@@ -27,7 +25,7 @@ def get_all():
 
 
 def get_instances():
-    """Get instance of all found detected wrapper classes"""
+    """Get instances of all found detected wrapper classes"""
     return (wclass() for wclass in get_all())
 
 

@@ -1,8 +1,9 @@
 import logging
 import re
-
 from pyquery import PyQuery
-from .common import BaseWrapper, session
+
+from spycis.utils import session
+from .common import BaseWrapper
 
 
 class TubeplusWrapper(BaseWrapper):

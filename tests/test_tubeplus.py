@@ -50,5 +50,8 @@ class WrapperTubeplusTests(unittest.TestCase):
         for url in urls:
             self.assertTrue(url.startswith('http://'))
 
+        import pdb
+        pdb.set_trace()
+
 if __name__ == "__main__":
     unittest.main()
