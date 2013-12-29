@@ -7,7 +7,7 @@ from spycis import wrappers
 from spycis.wrappers.example import ExampleWrapper
 
 
-class WrappersTestCase(unittest.TestCase):
+class WrappersTests(unittest.TestCase):
 
     def test_get_all_returns_example_wrapper_class(self):
         example_wrapper = ExampleWrapper
@@ -20,6 +20,7 @@ class WrappersTestCase(unittest.TestCase):
 
     def test_get_example_wrapper_instance_by_name_returns_valid_instance(self):
         self.assertTrue(isinstance(wrappers.get_by_name("example"), ExampleWrapper))
+
 
 if __name__ == "__main__":
     unittest.main()
