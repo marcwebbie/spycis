@@ -15,18 +15,26 @@ class ExtractorsTests(unittest.TestCase):
 
     def test_divxstage(self):
         extractor = extractors.get_extractor(name="divxstage")
+        self.assertIsNotNone(extractor)
 
         url = "http://www.divxstage.eu/video/v7f6bhbgvcbgw"
         dlurl = extractor.extract(url)
 
-        self.assertIsNot(dlurl, None)
+        self.assertIsNotNone(dlurl)
         self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_gorillavid(self):
         pass
 
     def test_putlocker(self):
+        extractor = extractors.get_extractor(name="putlocker")
+        self.assertIsNotNone(extractor)
+
         url = "http://www.putlocker.com/file/B90D29CBE84B2075"
+        dlurl = extractor.extract(url)
+
+        self.assertIsNotNone(dlurl)
+        self.assertTrue("flv" in dlurl or "mp4" in dlurl)
 
     def test_nowvideo(self):
         pass
