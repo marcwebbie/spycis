@@ -30,6 +30,8 @@ class DivxStageExtractor(BaseExtractor):
             video_id = video_id_or_url
         dest_url = self.holder_url.format(video_id)
 
+        info = {}
+
         logging.info("Destination url {}".format(dest_url))
         response = session.get(dest_url)
 
@@ -62,4 +64,5 @@ class DivxStageExtractor(BaseExtractor):
             logging.warning("Couldn't file raw url in api call url : {}".format(api_url))
             return None
 
-        return url_found
+        info['url'] = url_found
+        return info

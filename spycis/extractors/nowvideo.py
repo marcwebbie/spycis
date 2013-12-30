@@ -24,6 +24,12 @@ class NowVideoExtractor(BaseExtractor):
         else:
             video_id = video_id_or_url
 
+        info = {}
+
+        # get id
+        info['id'] = video_id
+
+        # get url
         dest_url = self.holder_url.format(video_id)
         logging.info("Destination url {}".format(dest_url))
 
@@ -55,4 +61,16 @@ class NowVideoExtractor(BaseExtractor):
             logging.info('url was not found in response: {}'.format(api_response.url))
             return None
 
-        return url_found
+        info['url'] = url_found
+
+        # Get file extension
+        info['ext'] = info['url'].split('.')[-1]
+
+        # get title
+        try:
+            info['title'] = re.search(r'title=(.*?)(?:&|%)', api_response.text).group(1)
+        except:
+            logging.warn('Couldnt get title from url: {}'.format(api_response.url))
+            return None
+
+        return info

@@ -5,3 +5,5 @@ headers = {
 }
 session = requests.Session()
 session.headers.update(headers)
+http_adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+session.mount('http://', http_adapter)

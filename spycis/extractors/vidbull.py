@@ -35,7 +35,7 @@ class VidbullExtractor(BaseExtractor):
 
         # Get file url
         try:
-            response = session.get(dest_url, timeout=5)
+            response = session.get(dest_url)
         except:
             logging.error('Error trying to request page at url: {}'.format(dest_url))
 
@@ -67,11 +67,11 @@ class VidbullExtractor(BaseExtractor):
 
         # Get title
         try:
-            response = session.get("http://vidbull.com/{}.html".format(info['id']), timeout=5)
+            response = session.get("http://vidbull.com/{}.html".format(info['id']))
             pq = PyQuery(response.content)
             info['title'] = pq('title').text().replace('VidBull - Watch ', '')
         except:
-            logging.warn('Error trying to request page at url: {}'.format(dest_url))
+            logging.warn('Couldnt get title from url: {}'.format(response.url))
             return None
 
         return info
