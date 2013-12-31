@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from spycis import wrappers
 
 
-class WrapperTubeplusTests(unittest.TestCase):
+class TubeplusTests(unittest.TestCase):
 
     def test_tubepluswrapper_exists(self):
         from spycis.wrappers.common import BaseWrapper
@@ -49,9 +49,6 @@ class WrapperTubeplusTests(unittest.TestCase):
 
         for url in urls:
             self.assertTrue(url.startswith('http://'))
-
-        import pdb
-        pdb.set_trace()
 
 if __name__ == "__main__":
     unittest.main()
