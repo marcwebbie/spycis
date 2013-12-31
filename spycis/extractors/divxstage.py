@@ -1,4 +1,5 @@
 import logging
+from mimetypes import guess_extension, guess_type
 import re
 
 from .common import BaseExtractor
@@ -23,14 +24,13 @@ class DivxStageExtractor(BaseExtractor):
         ]
 
     def extract(self, video_id_or_url):
-        video_id = None
-        if self.regex_url.match(video_id_or_url):
-            video_id = self.regex_url.match(video_id_or_url).group('id')
-        else:
-            video_id = video_id_or_url
-        dest_url = self.holder_url.format(video_id)
-
         info = {}
+
+        if self.regex_url.match(video_id_or_url):
+            info['id'] = self.regex_url.match(video_id_or_url).group('id')
+        else:
+            info['id'] = video_id_or_url
+        dest_url = self.holder_url.format(info['id'])
 
         logging.info("Destination url {}".format(dest_url))
         response = session.get(dest_url)
@@ -65,4 +65,19 @@ class DivxStageExtractor(BaseExtractor):
             return None
 
         info['url'] = url_found
+
+        # Get file extension
+        try:
+            info['ext'] = guess_extension(guess_type(info['url'])[0]).strip('.')
+        except (AttributeError, IndexError):
+            logging.error('Couldnt get extension from url: {}'.format(info['url']))
+            return None
+
+        # get title
+        try:
+            info['title'] = re.search(r'title=(.*?)&', api_response.text).group(1)
+        except:
+            logging.error('Couldnt get title from url: {}'.format(api_response.url))
+            return None
+
         return info
