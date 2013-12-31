@@ -33,9 +33,6 @@ class PutlockerExtractor(BaseExtractor):
             logging.info("Couldn't fetch page at url: {}".format(dest_url))
             return None
 
-        import pdb
-        pdb.set_trace()
-
         # get form params 'fuck_you' and 'confirm'
         pq = PyQuery(html_embed)
         params = {}
