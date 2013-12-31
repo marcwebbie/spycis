@@ -41,10 +41,15 @@ class TubeplusWrapper(BaseWrapper):
                 logging.warning("Malformed code not in format s[SS]e[EE]".format(code))
 
             season_links_text = ' '.join(pq(a).attr('href') for a in pq('.season'))
-            rgx = re.compile(r"%s_%s_(\d+)" % (season, episode))
-            episode_id = rgx.search(season_links_text).group(1)
-            episode_url = self.site_url + '/player/{}/'.format(episode_id)
 
+            rgx = re.compile(r"%s_%s_(\d+)" % (season, episode))
+            try:
+                episode_id = rgx.search(season_links_text).group(1)
+            except AttributeError:
+                logging.debug("Could't find episode with this code: {}".format(code))
+                raise StopIteration()
+
+            episode_url = self.site_url + '/player/{}/'.format(episode_id)
             response = session.get(episode_url)
             pq = PyQuery(response.content)
 
