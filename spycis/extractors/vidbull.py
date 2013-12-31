@@ -5,7 +5,7 @@ import re
 from pyquery import PyQuery
 
 from .common import BaseExtractor
-from spycis.utils import session
+from spycis.utils import session, baseconv
 
 
 class VidbullExtractor(BaseExtractor):
@@ -23,16 +23,15 @@ class VidbullExtractor(BaseExtractor):
 
     def extract(self, video_id_or_url):
         """Extract info from stream url"""
-        if self.regex_url.match(video_id_or_url):
-            video_id = self.regex_url.match(video_id_or_url).group('id')
-        else:
-            video_id = video_id_or_url
-        dest_url = self.holder_url.format(video_id)
-
         info = {}
 
-        # Get id
-        info['id'] = video_id
+        info['extractor'] = self.name
+
+        if self.regex_url.match(video_id_or_url):
+            info['id'] = self.regex_url.match(video_id_or_url).group('id')
+        else:
+            info['id'] = video_id_or_url
+        dest_url = self.holder_url.format(info['id'])
 
         # Get file url
         try:
@@ -46,15 +45,22 @@ class VidbullExtractor(BaseExtractor):
         try:
             param_list = re.search(r"'([\w\|]*jwplayer)'.split", javascript).group(1)
             param_list = param_list.split('|')
-            obfuscated_file_url = re.search(r'\{g:"(.*?)",', javascript).group(1)
+
+            # file url is obfuscated using base 36 convertions
+            file_symbol_index = param_list.index('file')
+            file_symbol_letter = baseconv(int(file_symbol_index), base=36)
+            regex_file_url = '\\{{{0}:"(.*?)",'.format(file_symbol_letter)
+            obfuscated_file_url = re.search(regex_file_url, javascript).group(1)
+
+            # deobfuscate url
             real_file_url = re.sub(
                 r'\w+',
                 lambda x: str(param_list[int(x.group(), 36)] if param_list[int(x.group(), 36)] else x.group()),
                 obfuscated_file_url
             )
             info['url'] = real_file_url
-        except AttributeError:
-            logging.error('Error trying to parse script text')
+        except (AttributeError, ValueError):
+            logging.debug("Couldn't parse obfuscated javascript: {}".format(pq('span').text()))
             return None
 
         # Get file extension

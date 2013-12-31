@@ -55,7 +55,7 @@ class BaseExtractor(object):
         return host in self.host_list
 
     def is_valid_url(self, url):
-        return re.match(self.regex_url, url)
+        return self.regex_url.match(url)
 
     def get_id(self, url):
         if self.is_valid_url(url):

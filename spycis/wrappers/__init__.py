@@ -29,7 +29,7 @@ def get_instances():
     return (wclass() for wclass in get_all())
 
 
-def get_by_name(name):
+def get_instance(name):
     for wrapper in get_instances():
         if wrapper.name == name:
             return wrapper

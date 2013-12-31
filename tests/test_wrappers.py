@@ -10,11 +10,11 @@ class TubeplusTests(unittest.TestCase):
 
     def test_tubepluswrapper_exists(self):
         from spycis.wrappers.common import BaseWrapper
-        site = wrappers.get_by_name("tubeplus")
+        site = wrappers.get_instance("tubeplus")
         self.assertIsInstance(site, BaseWrapper)
 
     def test_tubeplus_search_return_expected_dict(self):
-        site = wrappers.get_by_name("tubeplus")
+        site = wrappers.get_instance("tubeplus")
         search_results = site.search("The Animal Kingdom")
 
         self.assertIsInstance(search_results, list)
@@ -44,7 +44,7 @@ class TubeplusTests(unittest.TestCase):
 
     def test_tubeplus_get_urls_return_valid_urls(self):
         url = "http://www.tubeplus.me/player/40142/Animal_Kingdom/"
-        site = wrappers.get_by_name("tubeplus")
+        site = wrappers.get_instance("tubeplus")
         urls = site.get_urls(url)
 
         for url in urls:

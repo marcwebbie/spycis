@@ -21,6 +21,9 @@ class PutlockerExtractor(BaseExtractor):
 
     def extract(self, video_id_or_url):
         info = {}
+
+        info['extractor'] = self.name
+
         if self.regex_url.match(video_id_or_url):
             info['id'] = self.regex_url.match(video_id_or_url).group('id')
         else:
