@@ -11,7 +11,7 @@ except ImportError:
     from Queue import Queue
 
 from spycis import extractors, wrappers
-from spycis.utils import session
+from spycis.utils import session, which
 
 
 class LogFormatter(logging.Formatter):
@@ -46,6 +46,7 @@ def get_args():
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
     aparser.add_argument("-d", "--download", action="store_true", help="play video using vlc or ffplay")
+    aparser.add_argument("-sub", "--subtitles", help="Subtitle language to download, ex: 'fr', 'en', 'pt-BR'...")
     aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
     aparser.add_argument("--player", default="cvlc", help="specify the player to use for the --play option, ex: --player vlc")
     args = aparser.parse_args()
@@ -59,6 +60,7 @@ class Reporter(object):
     last_length = 0
     last_dlrate = "0 K"
 
+    @staticmethod
     def sizeof_fmt(num):
         for x in ['bytes', 'K', 'M', 'G', 'T', 'P']:
             if num < 1024.0:
@@ -88,7 +90,7 @@ class Reporter(object):
 
 class Downloader(object):
 
-    def __init__(self, workers=None, print_as_info=False, player="cvlc"):
+    def __init__(self, workers=None, print_as_info=False, player="cvlc", subtitles=None):
         self.timeout = 5
         self.workers = workers
         self.extraction_queue = Queue()
@@ -96,6 +98,7 @@ class Downloader(object):
         self.extractor_list = list(extractors.get_instances())
         self.info_list = []
         self.player = player
+        self.subtitles = subtitles
 
     def _extract_worker(self):
         while True:
@@ -161,6 +164,9 @@ class Downloader(object):
         if info['ext'] not in local_filename:
             local_filename = "{}.{}".format(info['title'], info['ext'])
 
+        if self.subtitles:
+            self.download_subtitles(video_name=local_filename)
+
         with open(local_filename, 'wb') as f:
             print("Saving into : {}".format(local_filename))
             if total_length is None:  # no content length header
@@ -176,6 +182,17 @@ class Downloader(object):
 
                         Reporter.report(dlsize, total_length)
             print("")
+
+    def download_subtitles(self, video_name):
+        if self.subtitles and which('subliminal'):
+            command = [
+                "subliminal",
+                "-l", self.subtitles,
+                "-q", "-s", "-f",
+                "--", video_name
+            ]
+            subprocess.call(command)
+            print("Saved subtitle as: {}.srt".format(video_name))
 
 
 def run():
@@ -196,7 +213,8 @@ def run():
     downloader = Downloader(
         workers=args.workers,
         print_as_info=args.print_info,
-        player=args.player
+        player=args.player,
+        subtitles=args.subtitles,
     )
     site = wrappers.get_instance(args.site)
     if not site:
