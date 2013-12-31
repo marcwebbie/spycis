@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 VERSION = '0.0.0.1-dev'
 
 setup(
-    name='pycis',
+    name='spycis',
     version=VERSION,
     license='MIT',
     description='Console interface to stream websites',
