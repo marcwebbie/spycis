@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import subprocess
 import sys
 from threading import Thread
@@ -144,11 +145,22 @@ class Downloader(object):
 
     def play(self):
         info = next((i for i in self.info_list), None)
+        # os.chdir('/tmp')
+
+        # if self.subtitles:
+        #     subt_path = self.download_subtitles(video_name=info['title'])
+        #     import pdb
+        #     pdb.set_trace()
+        #     subt_path = os.path.join(os.getcwd, subt_path)
+
         if info:
             command = [
                 self.player,
                 info['url'],
             ]
+
+            # if subt_path:
+            #     command.extend(["--sub-file", subt_path])
             subprocess.call(command)
 
     def download(self):
@@ -185,6 +197,8 @@ class Downloader(object):
 
     def download_subtitles(self, video_name):
         if self.subtitles and which('subliminal'):
+            subtitle_path = "{}.srt".format(video_name)
+            print("Saving subtitle into: " + subtitle_path)
             command = [
                 "subliminal",
                 "-l", self.subtitles,
@@ -192,7 +206,7 @@ class Downloader(object):
                 "--", video_name
             ]
             subprocess.call(command)
-            print("Saved subtitle as: {}.srt".format(video_name))
+            return subtitle_path
 
 
 def run():
