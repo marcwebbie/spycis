@@ -48,7 +48,6 @@ def get_args():
     aparser.add_argument("-d", "--download", action="store_true", help="play video using vlc or ffplay")
     aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
     aparser.add_argument("--player", default="cvlc", help="specify the player to use for the --play option, ex: --player vlc")
-    aparser.add_argument("--downloader", default="curl", help="file downloader to use with dthe --download option")
     args = aparser.parse_args()
 
     return args
