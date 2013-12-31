@@ -11,6 +11,20 @@ class TubeplusWrapper(BaseWrapper):
     def __init__(self):
         self.site_url = "http://www.tubeplus.me"
 
+    def _build_stream_url(self, video_id, host):
+        if host in ("putlocker.com",):
+            return "http://www.putlocker.com/embed/{}".format(video_id)
+        elif host in ("gorillavid", "gorillavid.in", "gorillavid.com"):
+            return "http://gorillavid.in/embed-{}-650x400.html".format(video_id)
+        elif host in ("divxstage.eu",):
+            return "http://www.divxstage.eu/video/{}".format(video_id)
+        elif host in ("vidbull.com",):
+            return "http://vidbull.com/embed-{}-650x328.html".format(video_id)
+        elif host in ("nowvideo.eu", "nowvideo.ch",):
+            return "http://embed.nowvideo.sx/embed.php?v={}".format(video_id)
+        else:
+            return None
+
     def get_urls(self, url, code=None):
         """Return generator with stream urls for a given url"""
         if not url.startswith('http://www.tubeplus.me'):

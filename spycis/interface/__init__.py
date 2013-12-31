@@ -121,7 +121,7 @@ def run():
         query = args.search
         media_list = site.search(query)
         for media in media_list:
-            fstr = "{} {} ({})".format(media['tags'], media['title'].encode('utf-8', 'ignore'), media['url'])
+            fstr = "{} {!r} ({})".format(media['tags'], media['title'], media['url'])
             print(fstr)
 
     if args.url and args.code:
@@ -133,4 +133,4 @@ def run():
             downloader.extract(stream_urls)
         else:
             for stream_url in stream_urls:
-                print(stream_url, flush=True)
+                print(stream_url)
