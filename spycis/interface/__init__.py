@@ -1,5 +1,6 @@
 import argparse
 import logging
+import subprocess
 from threading import Thread
 try:
     from queue import Queue
@@ -35,15 +36,15 @@ def get_args():
     aparser = argparse.ArgumentParser()
 
     aparser.add_argument("--site", default="tubeplus", help="stream site name (example: --site streamsite)")
-    aparser.add_argument("-vv", "--verbose", action="store_true", help="verbose output for debugging")
-    aparser.add_argument("-w", "--workers", action="store", type=int, default=0, help="number of download workers")
+    aparser.add_argument("-v", "--verbose", action="store_true", help="verbose output for debugging")
+    aparser.add_argument("-w", "--workers", action="store", type=int, default=8, help="number of extraction thread workers")
     aparser.add_argument("-s", "--search", help="search site, prints result, ex: '-s Vampire Diaries'")
     aparser.add_argument("-c", "--code", help="code from episode to download, ex: '-c s01e02'")
     aparser.add_argument("-u", "--url", help="url to get stream urls from")
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
-    aparser.add_argument("--info", action="store_true", help="print info instead of urls")
-    aparser.add_argument("--player", default="vlc", help="specify the player to use for the --play option, ex: --player vlc")
+    aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
+    aparser.add_argument("--player", default="cvlc", help="specify the player to use for the --play option, ex: --player vlc")
     args = aparser.parse_args()
 
     return args
@@ -51,12 +52,14 @@ def get_args():
 
 class Downloader(object):
 
-    def __init__(self, workers=None, print_as_info=False):
+    def __init__(self, workers=None, print_as_info=False, player="cvlc"):
         self.timeout = 5
         self.workers = workers
         self.download_queue = Queue()
         self.print_as_info = print_as_info
         self.extractor_list = list(extractors.get_instances())
+        self.info_list = []
+        self.player = player
 
     def _extract_worker(self):
         while True:
@@ -68,6 +71,7 @@ class Downloader(object):
                 info = extractor.extract(url)
                 if info:
                     print(info if self.print_as_info else info['url'])
+                    self.info_list.append(info)
             else:
                 logging.debug("Couldn't get extractor for url: {0}".format(url))
 
@@ -97,6 +101,16 @@ class Downloader(object):
                 info = extractor.extract(url)
                 if info:
                     print(info if self.print_as_info else info['url'])
+                    self.info_list.append(info)
+
+    def play(self):
+        info = next((i for i in self.info_list), None)
+        if info:
+            command = [
+                self.player,
+                info['url'],
+            ]
+            subprocess.call(command)
 
 
 def run():
@@ -114,8 +128,22 @@ def run():
         root.setLevel(logging.CRITICAL)
 
     # Work on chosen site
+    downloader = Downloader(
+        workers=args.workers,
+        print_as_info=args.print_info,
+        player=args.player
+    )
     site = wrappers.get_instance(args.site)
-    downloader = Downloader(workers=args.workers, print_as_info=args.info)
+    if not site:
+        available_wrappers = wrappers.get_instances()
+        print("ERROR: Not an available site")
+        print("")
+        print("List of valid sites: ")
+        for site in wrappers.get_instances():
+            print("  {}".format(site.name))
+        print("")
+
+        return 1
 
     if args.search:
         query = args.search
@@ -129,8 +157,10 @@ def run():
         code = args.code
         stream_urls = site.get_urls(url, code=code)
 
-        if args.extract:
+        if args.extract or args.play:
             downloader.extract(stream_urls)
+            if args.play:
+                downloader.play()
         else:
             for stream_url in stream_urls:
                 print(stream_url)
