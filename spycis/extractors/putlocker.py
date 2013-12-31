@@ -1,4 +1,5 @@
 import logging
+from mimetypes import guess_extension, guess_type
 import re
 
 from pyquery import PyQuery
@@ -19,25 +20,30 @@ class PutlockerExtractor(BaseExtractor):
                              'http://www.putlocker.ws/file/AF115B1580D9C8F1']
 
     def extract(self, video_id_or_url):
-        video_id = None
+        info = {}
         if self.regex_url.match(video_id_or_url):
-            video_id = self.regex_url.match(video_id_or_url).group('id')
+            info['id'] = self.regex_url.match(video_id_or_url).group('id')
         else:
-            video_id = video_id_or_url
-        dest_url = self.holder_url.format(video_id)
-        logging.info("Destination url {}".format(dest_url))
+            info['id'] = video_id_or_url
+        dest_url = self.holder_url.format(info['id'])
 
-        html_embed = None
         try:
             html_embed = session.get(dest_url).text
         except:
             logging.info("Couldn't fetch page at url: {}".format(dest_url))
+            return None
 
-        # get form params 'fuck_you' and "confirm"
+        import pdb
+        pdb.set_trace()
+
+        # get form params 'fuck_you' and 'confirm'
         pq = PyQuery(html_embed)
         params = {}
         params['fuck_you'] = pq('form input[name=fuck_you]').attr('value')
         params['confirm'] = pq('form input[name=confirm]').attr('value')
+
+        # Get file title
+        info['title'] = pq('#file_title').text()
 
         # request webpage again as POST with query params to get real video page
         session.headers['Referer'] = dest_url
@@ -48,7 +54,7 @@ class PutlockerExtractor(BaseExtractor):
             match = re.search(r'/get_file\.php\?stream=(.+?)\'', real_page_response.text)
             api_params = {'stream': match.group(1)}
         except AttributeError:
-            logging.error(":{}:Couldn't build api call for : {}".format(self.name, video_id))
+            logging.error(":{}:Couldn't build api call for : {}".format(self.name, info['id']))
             return None
 
         api_response = session.get("http://www.putlocker.com/get_file.php", params=api_params)
@@ -57,5 +63,16 @@ class PutlockerExtractor(BaseExtractor):
         url_found = pq('[url]:last').attr('url')
         if not url_found:
             logging.warning("Couldn't extract url from api call: {}".format(api_response.url))
+            return None
 
-        return url_found
+        info['url'] = url_found
+        info['duration'] = pq('[url]:last').attr('duration')
+        info['thumbnail'] = pq('[type^=image]').attr('url')
+        info['ext'] = guess_extension(pq('[url]:last').attr('type'))
+        try:
+            info['ext'] = info['ext'].strip('.')
+        except AttributeError:
+            logging.error("Couldn't get extension for file: {}".format(info['url']))
+            return None
+
+        return info

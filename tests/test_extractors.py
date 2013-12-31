@@ -28,10 +28,14 @@ class ExtractorsTests(unittest.TestCase):
         self.assertIsNotNone(extractor)
 
         url = "http://www.putlocker.com/file/B90D29CBE84B2075"
-        dlurl = extractor.extract(url)
-        self.assertIsNotNone(dlurl)
 
-        self.assertTrue("flv" in dlurl or "mp4" in dlurl)
+        info = extractor.extract(url)
+        self.assertIsInstance(info, dict)
+
+        self.assertIn("id", info.keys())
+        self.assertIn("title", info.keys())
+        self.assertIn("url", info.keys())
+        self.assertIn("ext", info.keys())
 
     def test_nowvideo(self):
         extractor = extractors.get_extractor(name="nowvideo")
