@@ -1,5 +1,5 @@
 import logging
-from mimetypes import guess_extension, guess_type
+from mimetypes import guess_extension
 import re
 
 from pyquery import PyQuery

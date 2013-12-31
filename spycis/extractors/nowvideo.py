@@ -1,4 +1,5 @@
 import logging
+from mimetypes import guess_extension, guess_type
 import re
 
 from .common import BaseExtractor
@@ -18,20 +19,14 @@ class NowVideoExtractor(BaseExtractor):
                              "http://embed.nowvideo.sx/embed.php?v=hanu11wjzx2d7"]
 
     def extract(self, video_id_or_url):
-        video_id = None
-        if self.regex_url.match(video_id_or_url):
-            video_id = self.regex_url.match(video_id_or_url).group('id')
-        else:
-            video_id = video_id_or_url
-
         info = {}
-
-        # get id
-        info['id'] = video_id
+        if self.regex_url.match(video_id_or_url):
+            info['id'] = self.regex_url.match(video_id_or_url).group('id')
+        else:
+            info['id'] = video_id_or_url
 
         # get url
-        dest_url = self.holder_url.format(video_id)
-        logging.info("Destination url {}".format(dest_url))
+        dest_url = self.holder_url.format(info['id'])
 
         response = session.get(dest_url)
 
@@ -43,7 +38,7 @@ class NowVideoExtractor(BaseExtractor):
         except:
             logging.error("Couldn't find key param for api call from: {}".format(dest_url))
             return None
-        query_params['file'] = video_id
+        query_params['file'] = info['id']
         query_params['cid'] = "undefined"
         query_params['cid2'] = "undefined"
         query_params['cid3'] = "undefined"
@@ -64,7 +59,11 @@ class NowVideoExtractor(BaseExtractor):
         info['url'] = url_found
 
         # Get file extension
-        info['ext'] = info['url'].split('.')[-1]
+        try:
+            info['ext'] = guess_extension(guess_type(info['url'])[0]).strip('.')
+        except (AttributeError, IndexError):
+            logging.error('Couldnt get extension from url: {}'.format(info['url']))
+            return None
 
         # get title
         try:

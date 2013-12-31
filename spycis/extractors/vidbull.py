@@ -1,6 +1,7 @@
 import logging
+from mimetypes import guess_extension, guess_type
 import re
-import requests
+
 from pyquery import PyQuery
 
 from .common import BaseExtractor
@@ -57,7 +58,11 @@ class VidbullExtractor(BaseExtractor):
             return None
 
         # Get file extension
-        info['ext'] = info['url'].split('.')[-1]
+        try:
+            info['ext'] = guess_extension(guess_type(info['url'])[0]).strip('.')
+        except (AttributeError, IndexError):
+            logging.error('Couldnt get extension from url: {}'.format(info['url']))
+            return None
 
         # Get thumbnail url
         try:
