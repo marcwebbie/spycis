@@ -14,7 +14,7 @@ setup(
     url='https://github.com/marcwebbie/spycis',
     author='Marcwebbie',
     author_email='marcwebbie@gmail.com',
-    scripts=["bin/spycis"],
+    scripts=["bin/spycis", "bin/pyddicted"],
     packages=find_packages(),
     install_requires=open('requirements.pip').readlines(),
     test_suite='tests.test',
