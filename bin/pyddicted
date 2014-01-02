@@ -21,18 +21,32 @@ http_adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=
 session.mount('http://', http_adapter)
 
 
-class lazyproperty:
+# class lazyproperty:
 
-    def __init__(self, func):
-        self.func = func
+#     def __init__(self, func):
+#         self.func = func
 
-    def __get__(self, instance, cls):
-        if instance is None:
-            return self
+#     def __get__(self, instance, cls):
+#         if instance is None:
+#             return self
+#         else:
+#             value = self.func(instance)
+#             setattr(instance, self.func.__name__, value)
+#             return value
+
+
+def lazyproperty(func):
+    name = '_lazy_' + func.__name__
+
+    @property
+    def lazy(self):
+        if hasattr(self, name):
+            return getattr(self, name)
         else:
-            value = self.func(instance)
-            setattr(instance, self.func.__name__, value)
+            value = func(self)
+            setattr(self, name, value)
             return value
+    return lazy
 
 
 class Subtitle(object):
@@ -135,25 +149,25 @@ class Addicted(object):
             )
         ]
 
-        if any(True for s in subtitles if release_group in s.version):
+        if isinstance(release_group, str) and any(True for s in subtitles if release_group in s.version):
             return [s for s in subtitles if release_group in s.version]
         else:
             return subtitles
 
     def search(self, query):
-        search_result = [(show, SequenceMatcher(None, query.lower(), show.name.lower()).quick_ratio()) for show in self.shows]
-        show = next(filter(lambda x: x[1] == 1.0, search_result), [None])[0]
-        if show:
-            return show
+        search_result = {show: SequenceMatcher(None, query.lower(), show.name.lower()).quick_ratio() for show in self.shows}
+        full_matches = [show for show, ratio in search_result.items() if ratio == 1.0]
+        if full_matches:
+            return full_matches
         else:
-            return sorted(search_result, key=lambda x: x[1])[:-10:-1]
+            return sorted(search_result, key=d.get, reverse=True)[:10]
 
 
 def get_args():
     aparser = argparse.ArgumentParser()
-    aparser.add_argument("-l", "--language", help="subtitles language")
+    aparser.add_argument("-l", "--language", default='en', help="subtitles language")
     aparser.add_argument("-o", "--output", help="output filepath")
-    aparser.add_argument("-s", "--stdout", action='store_true', help="print to stdout")
+    aparser.add_argument("--stdout", action='store_true', help="print to stdout")
     aparser.add_argument("filepath", help="path to file for subtitles")
     args = aparser.parse_args()
 
@@ -165,20 +179,18 @@ if __name__ == "__main__":
     filepath = args.filepath
     info = guessit.guess_video_info(filepath)
 
-    addicted = Addicted()
-    search_result = addicted.search(info['series'])
-    if isinstance(search_result, list):
-        sys.stderr.write('Not unique search')
-        sys.stderr.write("{}\n".format(info))
-        for show in search_result:
-            sys.stderr.write("{}\n".format(show))
-    else:
-        show = search_result
+    a = Addicted()
+    search_result = a.search(info['series'])
+    if len(search_result) == 1:
+        show = search_result[0]
         season = info['season']
         episode = info['episodeNumber']
-        release = info['releaseGroup']
+        release = info.get('releaseGroup', None)
         language = args.language
-        subs = addicted.get_subtitles(show_id=show.id, season=season, episode=episode, language=language, release_group=release)
+        subs = a.get_subtitles(show_id=show.id, season=season, episode=episode, language=language, release_group=release)
+
+        for s in subs:
+            sys.stderr.write("{}\n".format(s))
 
         if len(subs) > 0:
             if args.stdout:
@@ -188,3 +200,8 @@ if __name__ == "__main__":
                 with open(filename, 'w') as subfile:
                     subfile.write(subs[0].text)
                 sys.stderr.write("Subtitles save as: {}\n".format(filename))
+    else:
+        sys.stderr.write('Not unique search')
+        sys.stderr.write("{}\n".format(info))
+        for show in search_result:
+            sys.stderr.write("{}\n".format(show))

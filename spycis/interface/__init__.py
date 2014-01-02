@@ -46,7 +46,7 @@ def get_args():
     aparser.add_argument("-u", "--url", help="url to get stream urls from")
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
-    aparser.add_argument("-d", "--download", action="store_true", help="play video using vlc or ffplay")
+    aparser.add_argument("-d", "--download", action="store_true", help="Download video to disk")
     aparser.add_argument("-sub", "--subtitles", help="Subtitle language to download, ex: 'fr', 'en', 'pt-BR'...")
     aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
     aparser.add_argument("--player", default="cvlc", help="specify the player to use for the --play option, ex: --player vlc")
