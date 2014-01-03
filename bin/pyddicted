@@ -65,18 +65,8 @@ class Subtitle(object):
         self.url = None
         self.retrieved_from_url = None
 
-    @lazyproperty
-    def content(self):
-        r = session.get(self.url, headers={'Referer': self.retrieved_from_url})
-        return r.content
-
-    @lazyproperty
-    def text(self):
-        r = session.get(self.url, headers={'Referer': self.retrieved_from_url})
-        return r.text
-
     def __str__(self):
-        return "<Subtitle: {0.show}, s{0.season}e{0.episode}, {0.episode_title}, {0.version}>".format(self)
+        return "<Subtitle: {0.show}, s{0.season}e{0.episode}, {0.episode_title}, {0.version}, {0.language}>".format(self)
 
     def __repr__(self):
         return self.__str__()
@@ -84,31 +74,27 @@ class Subtitle(object):
 
 class Addicted(object):
 
-    @property
-    def languages(self):
-        return {
-            'ar': 'Arabic',
-            'ca': 'Catala',
-            'en': 'English',
-            'eu': 'Euskera',
-            'fr': 'French',
-            'es': 'Spanish',
-            'de': 'Germnan',
-            'it': 'Italian',
-            'br': 'Portuguese (Brazilian)',
-        }
-
-    def get_language(self, code):
-        return self.languages.get(code, None)
-
     def get_language_code(self, name):
-        return {v: k for k, v in self.languages.items()}.get(name)
+        langs = {'Arabic': 'ar',
+                 'Catala': 'ca',
+                 'English': 'en',
+                 'Euskera': 'eu',
+                 'French': 'fr',
+                 'Germnan': 'de',
+                 'Italian': 'it',
+                 'Portuguese (Brazilian)': 'br',
+                 'Spanish': 'es'}
+        return langs.get(name, None)
 
     @lazyproperty
     def shows(self):
         Show = namedtuple("Show", ["id", "name"])
         res = session.get('http://www.addic7ed.com/shows.php')
         return [Show(a.attr('href').split('/')[-1], a.text()) for a in PyQuery(res.content)('td.version a').items()]
+
+    def get_subtitle_text(self, subtitle):
+        r = session.get(subtitle.url, headers={'Referer': subtitle.retrieved_from_url})
+        return r.text
 
     def get_subtitles(self, show_id, season, episode, language='en', hearing_impaired=False, release_group=None):
         site_url = "http://www.addic7ed.com"
@@ -193,12 +179,14 @@ if __name__ == "__main__":
             sys.stderr.write("{}\n".format(s))
 
         if len(subs) > 0:
+            first_sub = subs[0]
+            subtitles_text = a.get_subtitle_text(first_sub)
             if args.stdout:
-                print(subs[0].text)
+                print(subtitles_text)
             else:
                 filename = args.output if args.output else os.path.splitext(filepath)[0] + '.srt'
                 with open(filename, 'w') as subfile:
-                    subfile.write(subs[0].text)
+                    subfile.write(subtitles_text)
                 sys.stderr.write("Subtitles save as: {}\n".format(filename))
     else:
         sys.stderr.write('Not unique search')
