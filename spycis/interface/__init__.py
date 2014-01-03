@@ -46,6 +46,7 @@ def get_args():
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
     aparser.add_argument("-d", "--download", action="store_true", help="Download video to disk")
+    aparser.add_argument("--stream", action="store_true", help="Stream video over http")
     aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
     aparser.add_argument("--player", default="vlc", help="specify the player to use for the --play option, ex: --player vlc")
     args = aparser.parse_args()
@@ -141,6 +142,23 @@ class Downloader(object):
                     print(info if self.print_as_info else info['url'])
                     self.info_list.append(info)
 
+    def stream(self):
+        info = next((i for i in self.info_list), None)
+
+        cmd = [
+            "vlc",
+            "{}".format(info['url']),
+            # "--sub-file={}".format(subtitle_path),
+            "--file-caching=300",
+            "--sout=#transcode{}:http{mux=ts,dst=:8080/}",
+            "--sout-keep",
+        ]
+        import socket
+        addr = socket.gethostbyname(socket.gethostname())
+        sys.stderr.write('Streaming from: {}:8080\n'.format(addr))
+        sys.stderr.flush()
+        return subprocess.call(cmd)
+
     def play(self):
         info = next((i for i in self.info_list), None)
 
@@ -152,7 +170,8 @@ class Downloader(object):
             subprocess.call(command)
 
     def download(self):
-        for info in self.info_list:
+        for elem in self.info_list:
+            info = elem
             if info['ext'] == 'mp4':
                 break
 
@@ -224,11 +243,13 @@ def run():
         code = args.code
         stream_urls = site.get_urls(url, code=code)
 
-        if args.extract or args.play or args.download:
+        if args.extract or args.play or args.download or args.stream:
             downloader.extract(stream_urls)
-            if args.download:
+            if args.stream:
+                downloader.stream()
+            elif args.download:
                 downloader.download()
-            if args.play:
+            elif args.play:
                 downloader.play()
         else:
             for stream_url in stream_urls:
