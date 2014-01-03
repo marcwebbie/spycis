@@ -1,6 +1,5 @@
 import argparse
 import logging
-import os
 import subprocess
 import sys
 from threading import Thread
@@ -12,7 +11,7 @@ except ImportError:
     from Queue import Queue
 
 from spycis import extractors, wrappers
-from spycis.utils import session, which
+from spycis.utils import session
 
 
 class LogFormatter(logging.Formatter):
@@ -45,12 +44,10 @@ def get_args():
     aparser.add_argument("-c", "--code", help="code from episode to download, ex: '-c s01e02'")
     aparser.add_argument("-u", "--url", help="url to get stream urls from")
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
-    aparser.add_argument("--browser", action="store_true", help="open results in a browser")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
     aparser.add_argument("-d", "--download", action="store_true", help="Download video to disk")
-    aparser.add_argument("-sub", "--subtitles", help="Subtitle language to download, ex: 'fr', 'en', 'pt-BR'...")
     aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
-    aparser.add_argument("--player", default="cvlc", help="specify the player to use for the --play option, ex: --player vlc")
+    aparser.add_argument("--player", default="vlc", help="specify the player to use for the --play option, ex: --player vlc")
     args = aparser.parse_args()
 
     return args
@@ -146,42 +143,18 @@ class Downloader(object):
 
     def play(self):
         info = next((i for i in self.info_list), None)
-        # os.chdir('/tmp')
-
-        # if self.subtitles:
-        #     subt_path = self.download_subtitles(video_name=info['title'])
-        #     import pdb
-        #     pdb.set_trace()
-        #     subt_path = os.path.join(os.getcwd, subt_path)
 
         if info:
             command = [
                 self.player,
                 info['url'],
             ]
-
-            # if subt_path:
-            #     command.extend(["--sub-file", subt_path])
             subprocess.call(command)
 
-    def show_on_browser(self):
-        import webbrowser
-        pass
-        # with open('spycis_result.html', 'w') as html_file:
-        #     """
-        #     <!DOCTYPE html>
-        #     <html>
-        #     <head>
-        #     </head>
-        #     </body>
-        #     </body>
-        #     """
-
     def download(self):
-        try:
-            info = next((i for i in self.info_list if i['ext'] in i['title']), self.info_list[0])
-        except (TypeError, IndexError):
-            logging.debug("Info not found to download")
+        for info in self.info_list:
+            if info['ext'] == 'mp4':
+                break
 
         response = session.get(info['url'], stream=True)
         total_length = response.headers.get('content-length')
@@ -189,9 +162,6 @@ class Downloader(object):
         local_filename = info['title']
         if info['ext'] not in local_filename:
             local_filename = "{}.{}".format(info['title'], info['ext'])
-
-        if self.subtitles:
-            self.download_subtitles(video_name=local_filename)
 
         with open(local_filename, 'wb') as f:
             print("Saving into : {}".format(local_filename))
@@ -208,19 +178,6 @@ class Downloader(object):
 
                         Reporter.report(dlsize, total_length)
             print("")
-
-    def download_subtitles(self, video_name):
-        if self.subtitles and which('subliminal'):
-            subtitle_path = "{}.srt".format(video_name)
-            print("Saving subtitle into: " + subtitle_path)
-            command = [
-                "subliminal",
-                "-l", self.subtitles,
-                "-q", "-s", "-f",
-                "--", video_name
-            ]
-            subprocess.call(command)
-            return subtitle_path
 
 
 def run():
@@ -242,7 +199,6 @@ def run():
         workers=args.workers,
         print_as_info=args.print_info,
         player=args.player,
-        subtitles=args.subtitles,
     )
     site = wrappers.get_instance(args.site)
     if not site:
@@ -255,15 +211,16 @@ def run():
 
         return 1
 
-    if args.search:
-        query = args.search
-        media_list = site.search(query)
-        for media in media_list:
-            fstr = "{} {!r} ({})".format(media['tags'], media['title'], media['url'])
-            print(fstr)
-
-    if args.url and args.code:
+    if (args.url or args.search) and args.code:
         url = args.url
+
+        if args.search:
+            query = args.search
+            search_result = site.search(query)
+            show = next((s for s in search_result if 'tv-show' in s['tags']), None)
+            if show and show.get('url', None):
+                url = show['url']
+
         code = args.code
         stream_urls = site.get_urls(url, code=code)
 
@@ -276,3 +233,10 @@ def run():
         else:
             for stream_url in stream_urls:
                 print(stream_url)
+    elif args.search:
+        query = args.search
+        search_result = site.search(query)
+
+        for result in search_result:
+            fstr = "{} {!r} ({})".format(result['tags'], result['title'], result['url'])
+            print(fstr)

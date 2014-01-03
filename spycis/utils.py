@@ -18,15 +18,3 @@ def baseconv(number, base=10):
         result = alphabet[i] + result
 
     return result or alphabet[0]
-
-
-def which(program):
-    """
-    Mimics behavior of UNIX which command.
-    """
-    envdir_list = os.environ["PATH"].split(os.pathsep)
-
-    for envdir in envdir_list:
-        program_path = os.path.join(envdir, program)
-        if os.path.isfile(program_path) and os.access(program_path, os.X_OK):
-            return program_path
