@@ -45,6 +45,7 @@ def get_args():
     aparser.add_argument("-c", "--code", help="code from episode to download, ex: '-c s01e02'")
     aparser.add_argument("-u", "--url", help="url to get stream urls from")
     aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
+    aparser.add_argument("--browser", action="store_true", help="open results in a browser")
     aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
     aparser.add_argument("-d", "--download", action="store_true", help="Download video to disk")
     aparser.add_argument("-sub", "--subtitles", help="Subtitle language to download, ex: 'fr', 'en', 'pt-BR'...")
@@ -162,6 +163,19 @@ class Downloader(object):
             # if subt_path:
             #     command.extend(["--sub-file", subt_path])
             subprocess.call(command)
+
+    def show_on_browser(self):
+        import webbrowser
+        pass
+        # with open('spycis_result.html', 'w') as html_file:
+        #     """
+        #     <!DOCTYPE html>
+        #     <html>
+        #     <head>
+        #     </head>
+        #     </body>
+        #     </body>
+        #     """
 
     def download(self):
         try:
