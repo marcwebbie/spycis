@@ -15,11 +15,11 @@ from threading import Thread
 import time
 try:
     from queue import Queue
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urlunparse
 except ImportError:
     # fallback to python2
     from Queue import Queue
-    from urlparse import urlparse
+    from urlparse import urlparse, urlunparse
     input = raw_input
 
 from spycis import extractors, wrappers
@@ -249,10 +249,14 @@ def is_raw_url(url):
     logging.debug("Testing if is raw url: {}".format(url))
     logging.debug("Parsed url: {}".format(urlparse(url)))
 
-    url_scheme = urlparse(url).scheme
-    url_path = urlparse(url).path
+    if os.path.isfile(url):
+        url = urlunparse(urlparse(os.path.abspath(url))._replace(scheme='file'))
+
+    parsed_url = urlparse(url)
+    url_scheme = parsed_url.scheme
+    url_path = parsed_url.path
     try:
-        url_extension = guess_extension(guess_type(urlparse(url).path)[0])
+        url_extension = guess_extension(guess_type(parsed_url.path)[0])
     except AttributeError:
         logging.warning("Url n'a pas d'extension")
         return None
@@ -260,8 +264,8 @@ def is_raw_url(url):
     valid_extensions = ('.flv', '.mp4', '.avi', '.mkv', '.m4v', '.webm', '.mp3', '.aac', '.ogg')
     valid_schemes = ('http', 'https', 'ftp', 'udp', 'file')
 
-    if (url_scheme in valid_schemes and url_extension in valid_extensions):
-        return True
+    if url_scheme in valid_schemes and url_extension in valid_extensions:
+        return parsed_url
     else:
         return False
 
@@ -314,9 +318,11 @@ def run():
 
     elif is_raw_url(url=args.query):
         url = args.query
-        url_path = urlparse(url).path
-        title = os.path.basename(url_path)
-        extension = guess_extension(guess_type(url_path)[0])
+        parsed_url = is_raw_url(url=args.query)
+
+        title = os.path.basename(parsed_url.path)
+        extension = guess_extension(guess_type(parsed_url.path)[0])
+
         info = {
             "id": "unknown",
             "title":  title,
@@ -374,9 +380,9 @@ def run():
     else:
         query = args.query
 
-        if urlparse(query).scheme:
+        if is_raw_url(url) or urlparse(query).scheme:
             logging.warning("Can't do search on urls")
-        elif query:
+        else:
             search_result = site.search(query)
             for position, result in enumerate(search_result):
                 fstr = "{0:<15} {1:<13} {2:50} ({3})".format(
@@ -386,8 +392,6 @@ def run():
                     result['url']
                 )
                 print(fstr)
-        else:
-            return
 
     # Bonus options
     if args.play and downloader.info_list:
