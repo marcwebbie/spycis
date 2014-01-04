@@ -178,21 +178,21 @@ class Downloader(object):
                 subtitle_path = urlparse(subtitle_path).path
                 subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
 
-                cmd = [
-                    "cvlc",
-                    "{}".format(video_path),
-                    "--sub-file={}".format(subtitle_path),
-                    "--file-caching=1000",
-                    # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
-                    "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
-                ]
+            cmd = [
+                "cvlc",
+                "{}".format(video_path),
+                "--sub-file={}".format(subtitle_path),
+                "--file-caching=1000",
+                # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
+                "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
+            ]
 
-                addr = socket.gethostbyname(socket.gethostname())
-                sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
-                sys.stderr.write('\n'.format(addr))
-                sys.stderr.flush()
+            addr = socket.gethostbyname(socket.gethostname())
+            sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
+            sys.stderr.write('\n'.format(addr))
+            sys.stderr.flush()
 
-                return subprocess.call(cmd)
+            return subprocess.call(cmd)
         else:
             sys.stderr.write("Couldn't find a match url for stream\n")
             sys.stderr.flush()
@@ -317,8 +317,9 @@ def run():
         downloader.extract([url])
 
     elif is_raw_url(url=args.query):
-        url = args.query
         parsed_url = is_raw_url(url=args.query)
+        path = parsed_url.path
+        url = path if os.path.isfile(path) else args.query
 
         title = os.path.basename(parsed_url.path)
         extension = guess_extension(guess_type(parsed_url.path)[0])
