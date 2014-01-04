@@ -9,7 +9,7 @@ setup(
     version=VERSION,
     license='MIT',
     description='Console interface to stream websites',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
     keywords='stream video movie episode tv show film player',
     url='https://github.com/marcwebbie/spycis',
     author='Marcwebbie',

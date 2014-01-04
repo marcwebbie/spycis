@@ -1,7 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import argparse
 import logging
+import random
+import socket
 import subprocess
 import sys
+from tempfile import NamedTemporaryFile
 from threading import Thread
 import time
 try:
@@ -11,7 +18,7 @@ except ImportError:
     from Queue import Queue
 
 from spycis import extractors, wrappers
-from spycis.utils import session
+from spycis.utils import session, Color, set_color
 
 
 class LogFormatter(logging.Formatter):
@@ -37,18 +44,24 @@ class LogFormatter(logging.Formatter):
 def get_args():
     aparser = argparse.ArgumentParser()
 
-    aparser.add_argument("--site", default="tubeplus", help="stream site name (example: --site streamsite)")
+    aparser.add_argument("query", help="L'argument principale pour les recherches")
+
+    aparser.add_argument("-r", "--raw-urls", help="Retourne les raw urls pour le code ou specifié. ex: `-r s02e31` ou `--raw-urls  s02e31`")
+    aparser.add_argument("-s", "--stream-urls", help="Retourne les stream urls pour le code specifié. ex: `-s s02e31` ou `--stream-urls  s02e31`")
+    aparser.add_argument("-p", "--position", type=int, default=-1,
+                         help="Options utilisé avec `-r` ou `-s` pour specifié la positon¹. ex: `-p 2 -r s02e31`")
+
+    aparser.add_argument("--play", help="Executer le premier fichier au format specifié dans les `raw urls` extraites. ex: `--play mp4`")
+    aparser.add_argument("--player", default="vlc", help="Choisir le player pour l'option play ex: `--player amarok`")
+    aparser.add_argument("--download", help="Télécharge le premier fichier en format dans les `raw urls` extraites. ex: `--download mp4`")
+    aparser.add_argument("--stream", help="Ouvre streaming sur la porte specifié. ex: `--stream 8080`")
+    aparser.add_argument("--subtitles", help="Ouvre streaming pour les soustitres ex: `--subtitles mes_sous_titres.srt`")
+
     aparser.add_argument("-v", "--verbose", action="store_true", help="verbose output for debugging")
-    aparser.add_argument("-w", "--workers", action="store", type=int, default=8, help="number of extraction thread workers")
-    aparser.add_argument("-s", "--search", help="search site, prints result, ex: '-s Vampire Diaries'")
-    aparser.add_argument("-c", "--code", help="code from episode to download, ex: '-c s01e02'")
-    aparser.add_argument("-u", "--url", help="url to get stream urls from")
-    aparser.add_argument("-x", "--extract", action="store_true", help="extract raw video urls from stream urls")
-    aparser.add_argument("-p", "--play", action="store_true", help="play video using vlc or ffplay")
-    aparser.add_argument("-d", "--download", action="store_true", help="Download video to disk")
-    aparser.add_argument("--stream", action="store_true", help="Stream video over http")
-    aparser.add_argument("--print-info", action="store_true", help="print info instead of urls")
-    aparser.add_argument("--player", default="vlc", help="specify the player to use for the --play option, ex: --player vlc")
+    aparser.add_argument("--site", default="tubeplus", help="Changer le site de recherche. ex: `--site sitename`")
+    aparser.add_argument("-w", "--workers", action="store", type=int, default=8,
+                         help="Nombre des threads pour l'extraction des urls ex: `--workers 20`")
+
     args = aparser.parse_args()
 
     return args
@@ -90,15 +103,13 @@ class Reporter(object):
 
 class Downloader(object):
 
-    def __init__(self, workers=None, print_as_info=False, player="cvlc", subtitles=None):
-        self.timeout = 5
+    def __init__(self, workers=None, print_as_info=False):
         self.workers = workers
-        self.extraction_queue = Queue()
         self.print_as_info = print_as_info
+        self.extraction_queue = Queue()
         self.extractor_list = list(extractors.get_instances())
+
         self.info_list = []
-        self.player = player
-        self.subtitles = subtitles
 
     def _extract_worker(self):
         while True:
@@ -142,32 +153,54 @@ class Downloader(object):
                     print(info if self.print_as_info else info['url'])
                     self.info_list.append(info)
 
-    def stream(self):
-        info = next((i for i in self.info_list), None)
+    def stream(self, stream_port, subtitles):
+        mp4_infos = [i for i in self.info_list if 'mp4' in i['ext']]
+        info = random.choice(mp4_infos) if mp4_infos else []
+        if not info:
+            info = random.choice(self.info_list)
 
-        cmd = [
-            "vlc",
-            "{}".format(info['url']),
-            # "--sub-file={}".format(subtitle_path),
-            "--file-caching=300",
-            "--sout=#transcode{}:http{mux=ts,dst=:8080/}",
-            "--sout-keep",
-        ]
-        import socket
-        addr = socket.gethostbyname(socket.gethostname())
-        sys.stderr.write('Streaming from: {}:8080\n'.format(addr))
-        sys.stderr.flush()
-        return subprocess.call(cmd)
+        if info:
+            video_path = info['url']
+            subtitle_path = subtitles
+            if not subtitle_path:
+                subtitle_path = input("Glissez les sous-titres pour {!r} ici : ".format(info['title'])).strip().strip('"\'')
+                subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
 
-    def play(self):
+            cmd = [
+                "cvlc",
+                "{}".format(video_path),
+                "--sub-file={}".format(subtitle_path),
+                "--file-caching=1000",
+                # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
+                "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
+            ]
+
+            addr = socket.gethostbyname(socket.gethostname())
+            sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
+            sys.stderr.write('\n'.format(addr))
+            sys.stderr.flush()
+            return subprocess.call(cmd)
+        else:
+            sys.stderr.write("Couldn't find a match url for stream\n")
+            sys.stderr.flush()
+            return None
+
+    def play(self, extension, player):
         info = next((i for i in self.info_list), None)
 
         if info:
             command = [
-                self.player,
+                player,
                 info['url'],
             ]
+
+            if player in ("vlc", "cvlc"):
+                command.extend([
+                    "--file-caching=1000",
+                ])
             subprocess.call(command)
+        else:
+            logging.warning("Couldn't find video file with extension: {}", extension)
 
     def download(self):
         for elem in self.info_list:
@@ -202,6 +235,10 @@ class Downloader(object):
 def run():
     args = get_args()
 
+    # print("==============================")
+    # print(args)
+    # print("==============================")
+
     # Setup logger
     root = logging.getLogger()
     handler = logging.StreamHandler()
@@ -216,8 +253,6 @@ def run():
     # Work on chosen site
     downloader = Downloader(
         workers=args.workers,
-        print_as_info=args.print_info,
-        player=args.player,
     )
     site = wrappers.get_instance(args.site)
     if not site:
@@ -227,37 +262,88 @@ def run():
         for site in wrappers.get_instances():
             print("  {}".format(site.name))
         print("")
-
         return 1
 
-    if (args.url or args.search) and args.code:
-        url = args.url
-
-        if args.search:
-            query = args.search
-            search_result = site.search(query)
-            show = next((s for s in search_result if 'tv-show' in s['tags']), None)
-            if show and show.get('url', None):
-                url = show['url']
-
-        code = args.code
+    if site.is_valid_url(args.query):
+        url = args.query
+        code = args.raw_urls if args.raw_urls else args.stream_urls
         stream_urls = site.get_urls(url, code=code)
-
-        if args.extract or args.play or args.download or args.stream:
+        if args.raw_urls:
             downloader.extract(stream_urls)
-            if args.stream:
-                downloader.stream()
-            elif args.download:
-                downloader.download()
-            elif args.play:
-                downloader.play()
         else:
             for stream_url in stream_urls:
                 print(stream_url)
-    elif args.search:
-        query = args.search
+
+    elif any(ext.is_valid_url(args.query) for ext in extractors.get_instances()):
+        url = args.query
+        downloader.extract([url])
+
+    elif args.stream_urls:
+        query = args.query
         search_result = site.search(query)
 
-        for result in search_result:
-            fstr = "{} {!r} ({})".format(result['tags'], result['title'], result['url'])
+        position = args.position if args.position >= 0 else 0
+        try:
+            url = search_result[position]['url']
+        except IndexError:
+            raise IndexError("Position non valide")
+
+        code = args.stream_urls
+        stream_urls = site.get_urls(url, code=code)
+
+        for stream_url in stream_urls:
+            print(stream_url)
+
+    elif args.raw_urls:
+        query = args.query
+        search_result = site.search(query)
+
+        position = args.position if args.position >= 0 else 0
+        try:
+            url = search_result[position]['url']
+        except IndexError:
+            raise IndexError("Position non valide")
+
+        code = args.raw_urls
+        stream_urls = site.get_urls(url, code=code)
+        downloader.extract(stream_urls)
+
+    elif args.position >= 0:
+        """Obtenir les raw urls pour la position de recherche 30. 
+        Attention ça marche que pour les film, pour les series au moins 
+        un code episode doit être informé au format:-p 30 -r s01e01
+
+        spycis -p 30 "Lion King"""
+        query = args.query
+        search_result = site.search(query)
+        position = args.position
+        try:
+            url = search_result[position]['url']
+        except IndexError:
+            raise IndexError("Position non valide")
+
+        stream_urls = site.get_urls(url, code=None)
+        downloader.extract(stream_urls)
+    else:
+        query = args.query
+        search_result = site.search(query)
+        for position, result in enumerate(search_result):
+            fstr = "{0:<15} {1:<13} {2:50} ({3})".format(
+                "[{}]".format(set_color(position, Color.YELLOW)),
+                result['tags'],
+                set_color(repr(result['title']), Color.GREEN),
+                result['url']
+            )
             print(fstr)
+
+    # Bonus options
+    if args.play and downloader.info_list:
+        extension = args.play
+        player = args.player
+        downloader.play(extension=extension, player=player)
+    elif args.stream and downloader.info_list:
+        stream_port = args.stream
+        subtitles = args.subtitles
+        downloader.stream(stream_port=stream_port, subtitles=subtitles)
+
+    print("")

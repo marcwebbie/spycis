@@ -18,3 +18,15 @@ def baseconv(number, base=10):
         result = alphabet[i] + result
 
     return result or alphabet[0]
+
+
+class Color(object):
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    RED = "\033[91m"
+    YELLOW = "\033[93m"
+    END = "\033[0m"
+
+
+def set_color(s, color):
+    return "{}{}{}".format(color, s, Color.END)
