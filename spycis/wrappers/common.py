@@ -9,6 +9,9 @@ class BaseWrapper(object):
         class_name = self.__class__.__name__.lower().replace('wrapper', '')
         return class_name
 
+    def is_valid_url(self, url):
+        return self.url_regex.match(url)
+
     def get_urls(self, url, code=None):
         """Return generator for player pages
         If code is specified fetch urls from page that match code,
