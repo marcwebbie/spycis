@@ -6,6 +6,7 @@ import argparse
 from mimetypes import guess_extension, guess_type
 import logging
 import random
+import os
 import socket
 import subprocess
 import sys
@@ -45,10 +46,14 @@ class LogFormatter(logging.Formatter):
         return LogFormatter.color[level] + final_msg + LogFormatter.color['ENDC']
 
 
+def get_version():
+    version_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '__version__.py')
+    version = open(version_file).read().strip()
+    return version
+
+
 def get_args():
     aparser = argparse.ArgumentParser()
-
-    aparser.add_argument("query", help="L'argument principale pour les recherches")
 
     aparser.add_argument("-r", "--raw-urls", help="Retourne les raw urls pour le code ou specifié. ex: `-r s02e31` ou `--raw-urls  s02e31`")
     aparser.add_argument("-s", "--stream-urls", help="Retourne les stream urls pour le code specifié. ex: `-s s02e31` ou `--stream-urls  s02e31`")
@@ -61,13 +66,15 @@ def get_args():
     aparser.add_argument("--stream", help="Ouvre streaming sur la porte specifié. ex: `--stream 8080`")
     aparser.add_argument("--subtitles", help="Ouvre streaming pour les soustitres ex: `--subtitles mes_sous_titres.srt`")
 
-    aparser.add_argument("-v", "--verbose", action="store_true", help="verbose output for debugging")
+    aparser.add_argument("-v", "--verbose", action="store_true", help="active le mode verbose pour debugging")
     aparser.add_argument("--site", default="tubeplus", help="Changer le site de recherche. ex: `--site sitename`")
     aparser.add_argument("-w", "--workers", action="store", type=int, default=8,
                          help="Nombre des threads pour l'extraction des urls ex: `--workers 20`")
+    aparser.add_argument("--version", action='version', version=get_version(), help="imprime version et quitte")
+
+    aparser.add_argument("query", help="L'argument principale pour les recherches")
 
     args = aparser.parse_args()
-
     return args
 
 
@@ -168,6 +175,7 @@ class Downloader(object):
             subtitle_path = subtitles
             if not subtitle_path:
                 subtitle_path = input("Glissez les sous-titres pour {!r} ici : ".format(info['title'])).strip().strip('"\'')
+                subtitle_path = urlparse(subtitle_path).path
                 subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
 
                 cmd = [
@@ -250,7 +258,7 @@ def is_raw_url(url):
         return None
 
     valid_extensions = ('.flv', '.mp4', '.avi', '.mkv', '.m4v', '.webm', '.mp3', '.aac', '.ogg')
-    valid_schemes = ('http', 'https', 'ftp', 'udp')
+    valid_schemes = ('http', 'https', 'ftp', 'udp', 'file')
 
     if (url_scheme in valid_schemes and url_extension in valid_extensions):
         return True
@@ -306,10 +314,12 @@ def run():
 
     elif is_raw_url(url=args.query):
         url = args.query
-        extension = guess_extension(guess_type(urlparse(url).path)[0])
+        url_path = urlparse(url).path
+        title = os.path.basename(url_path)
+        extension = guess_extension(guess_type(url_path)[0])
         info = {
             "id": "unknown",
-            "title":  "url ajouté par utilisateur",
+            "title":  title,
             "url": url,
             "ext": extension,
         }
@@ -366,7 +376,7 @@ def run():
 
         if urlparse(query).scheme:
             logging.warning("Can't do search on urls")
-        else:
+        elif query:
             search_result = site.search(query)
             for position, result in enumerate(search_result):
                 fstr = "{0:<15} {1:<13} {2:50} ({3})".format(
@@ -376,6 +386,8 @@ def run():
                     result['url']
                 )
                 print(fstr)
+        else:
+            return
 
     # Bonus options
     if args.play and downloader.info_list:

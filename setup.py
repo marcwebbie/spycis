@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-VERSION = '0.0.0.1-dev'
-
 setup(
     name='spycis',
-    version=VERSION,
+    version=open('spycis/__version__.py').read().strip(),
     license='MIT',
     description='Console interface to stream websites',
     long_description=open('README.md').read(),
