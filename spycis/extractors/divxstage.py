@@ -16,7 +16,7 @@ class DivxStageExtractor(BaseExtractor):
         self.host_list = ["divxstage.eu"]
         self.holder_url = "http://www.divxstage.eu/video/{}"
         self.regex_url = re.compile(
-            r"(http|https)://(www|embed)\.(?P<host>divxstage\.eu)/(embed\.php\?v=http://www\.divxstage\.eu/)?(file/|video/)(?P<id>\w+$|\w+)(.*?$)"
+            r"(?:http|https)://(?:www|embed)\.(?P<host>divxstage\.eu)/(?:video/(http\://www\.divxstage\.eu/file/)?)?(?:embed.php\?v\=)?(?P<id>\w+)"
         )
         self.example_urls = [
             "http://www.divxstage.eu/video/v7f6bhbgvcbgw",
