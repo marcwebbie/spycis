@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import argparse
+from mimetypes import guess_extension, guess_type
 import logging
 import random
 import socket
@@ -13,9 +14,12 @@ from threading import Thread
 import time
 try:
     from queue import Queue
+    from urllib.parse import urlparse
 except ImportError:
     # fallback to python2
     from Queue import Queue
+    from urlparse import urlparse
+    input = raw_input
 
 from spycis import extractors, wrappers
 from spycis.utils import session, Color, set_color
@@ -166,20 +170,21 @@ class Downloader(object):
                 subtitle_path = input("Glissez les sous-titres pour {!r} ici : ".format(info['title'])).strip().strip('"\'')
                 subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
 
-            cmd = [
-                "cvlc",
-                "{}".format(video_path),
-                "--sub-file={}".format(subtitle_path),
-                "--file-caching=1000",
-                # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
-                "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
-            ]
+                cmd = [
+                    "cvlc",
+                    "{}".format(video_path),
+                    "--sub-file={}".format(subtitle_path),
+                    "--file-caching=1000",
+                    # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
+                    "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
+                ]
 
-            addr = socket.gethostbyname(socket.gethostname())
-            sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
-            sys.stderr.write('\n'.format(addr))
-            sys.stderr.flush()
-            return subprocess.call(cmd)
+                addr = socket.gethostbyname(socket.gethostname())
+                sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
+                sys.stderr.write('\n'.format(addr))
+                sys.stderr.flush()
+
+                return subprocess.call(cmd)
         else:
             sys.stderr.write("Couldn't find a match url for stream\n")
             sys.stderr.flush()
@@ -232,6 +237,27 @@ class Downloader(object):
             print("")
 
 
+def is_raw_url(url):
+    logging.debug("Testing if is raw url: {}".format(url))
+    logging.debug("Parsed url: {}".format(urlparse(url)))
+
+    url_scheme = urlparse(url).scheme
+    url_path = urlparse(url).path
+    try:
+        url_extension = guess_extension(guess_type(urlparse(url).path)[0])
+    except AttributeError:
+        logging.warning("Url n'a pas d'extension")
+        return None
+
+    valid_extensions = ('.flv', '.mp4', '.avi', '.mkv', '.m4v', '.webm', '.mp3', '.aac', '.ogg')
+    valid_schemes = ('http', 'https', 'ftp', 'udp')
+
+    if (url_scheme in valid_schemes and url_extension in valid_extensions):
+        return True
+    else:
+        return False
+
+
 def run():
     args = get_args()
 
@@ -277,6 +303,17 @@ def run():
     elif any(ext.is_valid_url(args.query) for ext in extractors.get_instances()):
         url = args.query
         downloader.extract([url])
+
+    elif is_raw_url(url=args.query):
+        url = args.query
+        extension = guess_extension(guess_type(urlparse(url).path)[0])
+        info = {
+            "id": "unknown",
+            "title":  "url ajouté par utilisateur",
+            "url": url,
+            "ext": extension,
+        }
+        downloader.info_list.append(info)
 
     elif args.stream_urls:
         query = args.query
@@ -326,15 +363,19 @@ def run():
         downloader.extract(stream_urls)
     else:
         query = args.query
-        search_result = site.search(query)
-        for position, result in enumerate(search_result):
-            fstr = "{0:<15} {1:<13} {2:50} ({3})".format(
-                "[{}]".format(set_color(position, Color.YELLOW)),
-                result['tags'],
-                set_color(repr(result['title']), Color.GREEN),
-                result['url']
-            )
-            print(fstr)
+
+        if urlparse(query).scheme:
+            logging.warning("Can't do search on urls")
+        else:
+            search_result = site.search(query)
+            for position, result in enumerate(search_result):
+                fstr = "{0:<15} {1:<13} {2:50} ({3})".format(
+                    "[{}]".format(set_color(position, Color.YELLOW)),
+                    result['tags'],
+                    set_color(repr(result['title']), Color.GREEN),
+                    result['url']
+                )
+                print(fstr)
 
     # Bonus options
     if args.play and downloader.info_list:
@@ -345,5 +386,3 @@ def run():
         stream_port = args.stream
         subtitles = args.subtitles
         downloader.stream(stream_port=stream_port, subtitles=subtitles)
-
-    print("")
