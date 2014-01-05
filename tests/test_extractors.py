@@ -70,6 +70,21 @@ class ExtractorsTests(unittest.TestCase):
         self.assertIn("url", info.keys())
         self.assertIn("ext", info.keys())
 
+    def test_movreel(self):
+        extractor = extractors.get_extractor(name="movreel")
+        self.assertIsNotNone(extractor)
+
+        url = "http://movreel.com/dpqrm3is53y1"
+        embed_url = "http://movreel.com/embed/dpqrm3is53y1"
+
+        info = extractor.extract(url)
+        self.assertIsInstance(info, dict)
+
+        self.assertIn("id", info.keys())
+        self.assertIn("title", info.keys())
+        self.assertIn("url", info.keys())
+        self.assertIn("ext", info.keys())
+
     def test_gorillavid(self):
         pass
 

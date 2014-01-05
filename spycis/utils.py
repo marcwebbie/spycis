@@ -1,5 +1,10 @@
 import os
 import requests
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    # fallback to python2
+    from urlparse import urlparse
 
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1674.0 Safari/537.36"
@@ -30,3 +35,9 @@ class Color(object):
 
 def set_color(s, color):
     return "{}{}{}".format(color, s, Color.END)
+
+
+def get_absolute_path(path):
+    parsed = urlparse.urlparse(url)
+    filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
+    return filepath

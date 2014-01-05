@@ -23,6 +23,16 @@ class TubeplusWrapper(BaseWrapper):
             return "http://vidbull.com/embed-{}-650x328.html".format(video_id)
         elif host in ("nowvideo.eu", "nowvideo.ch",):
             return "http://embed.nowvideo.sx/embed.php?v={}".format(video_id)
+        elif host in ("movreel.com"):
+            return "http://movreel.com/embed/{}".format(video_id)
+        elif host in ("novamov.com"):
+            return "http://embed.novamov.com/embed.php?v={}".format(video_id)
+        elif host in ("divxden.com", "vidxden.com"):
+            return "http://www.vidxden.com/embed-{}.html".format(video_id)
+        elif host in ("vidbux.com"):
+            return "http://www.vidbux.com/embed-{}.html".format(video_id)
+        elif host in ("180upload.com", "180upload.nl"):
+            return "http://180upload.com/embed-{}.html".format(video_id)
         else:
             return None
 

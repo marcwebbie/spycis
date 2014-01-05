@@ -23,7 +23,7 @@ except ImportError:
     input = raw_input
 
 from spycis import extractors, wrappers
-from spycis.utils import session, Color, set_color
+from spycis.utils import session, Color, set_color, get_absolute_path
 
 
 class LogFormatter(logging.Formatter):
@@ -66,6 +66,7 @@ def get_args():
     aparser.add_argument("--stream", help="Ouvre streaming sur la porte specifié. ex: `--stream 8080`")
     aparser.add_argument("--subtitles", help="Ouvre streaming pour les soustitres ex: `--subtitles mes_sous_titres.srt`")
 
+    aparser.add_argument("--udp", action="store_true", help="active stream par udp protocol")
     aparser.add_argument("-v", "--verbose", action="store_true", help="active le mode verbose pour debugging")
     aparser.add_argument("--site", default="tubeplus", help="Changer le site de recherche. ex: `--site sitename`")
     aparser.add_argument("-w", "--workers", action="store", type=int, default=8,
@@ -164,11 +165,8 @@ class Downloader(object):
                     print(info if self.print_as_info else info['url'])
                     self.info_list.append(info)
 
-    def stream(self, stream_port, subtitles):
-        mp4_infos = [i for i in self.info_list if 'mp4' in i['ext']]
-        info = random.choice(mp4_infos) if mp4_infos else []
-        if not info:
-            info = random.choice(self.info_list)
+    def stream(self, stream_port, subtitles, udp=False):
+        info = random.choice(self.info_list)
 
         if info:
             video_path = info['url']
@@ -182,9 +180,9 @@ class Downloader(object):
                 "cvlc",
                 "{}".format(video_path),
                 "--sub-file={}".format(subtitle_path),
-                "--file-caching=1000",
-                # "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:8080/}"
-                "--sout=#transcode{vcodec=h264,venc=x264{aud,profile=baseline,level=30,keyint=30,ref=1},acodec=mp3,ab=96,scodec=dvbs,soverlay}:http{mux=ts,dst=:%s/}" % stream_port
+                "--file-caching=3000",
+                # "--sout=#transcode{vcodec=h264,venc=x264{profile=baseline,level=30,keyint=30,ref=3},acodec=mp3,ab=96,scodec=dvbs,soverlay,threads=4}:http{mux=ts,dst=:%s/}" % stream_port
+                "--sout=#transcode{venc=x264{level=30,keyint=15,bframes=0,ref=1,nocabac},width=640,vcodec=x264,vb=400,acodec=mpga,ab=96,channels=2,samplerate=44100,scodec=dvbs,soverlay,threads==4}:http{mux=ts,dst=:%s/}" % stream_port
             ]
 
             addr = socket.gethostbyname(socket.gethostname())
@@ -194,7 +192,7 @@ class Downloader(object):
 
             return subprocess.call(cmd)
         else:
-            sys.stderr.write("Couldn't find a match url for stream\n")
+            sys.stderr.write("Couldn't find a match url for the stream\n")
             sys.stderr.flush()
             return None
 
@@ -270,6 +268,13 @@ def is_raw_url(url):
         return False
 
 
+def is_local_file(path):
+    parsed = urlparse(path)
+    filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
+
+    return os.path.isfile(filepath)
+
+
 def run():
     args = get_args()
 
@@ -317,11 +322,21 @@ def run():
         downloader.extract([url])
 
     elif is_raw_url(url=args.query):
-        parsed_url = is_raw_url(url=args.query)
-        path = parsed_url.path
-        url = path if os.path.isfile(path) else args.query
+        url = is_raw_url(url=args.query)
+        title = os.path.basename(url)
+        extension = guess_extension(guess_type(parsed_url.path)[0])
 
-        title = os.path.basename(parsed_url.path)
+        info = {
+            "id": "unknown",
+            "title":  title,
+            "url": url,
+            "ext": extension,
+        }
+        downloader.info_list.append(info)
+
+    elif is_local_file(path=args.query):
+        filepath = get_absolute_path(args.query)
+        title = os.path.basename(url)
         extension = guess_extension(guess_type(parsed_url.path)[0])
 
         info = {
@@ -365,9 +380,7 @@ def run():
     elif args.position >= 0:
         """Obtenir les raw urls pour la position de recherche 30. 
         Attention ça marche que pour les film, pour les series au moins 
-        un code episode doit être informé au format:-p 30 -r s01e01
-
-        spycis -p 30 "Lion King"""
+        un code episode doit être informé au format:-p 30 -r s01e01"""
         query = args.query
         search_result = site.search(query)
         position = args.position
@@ -402,4 +415,4 @@ def run():
     elif args.stream and downloader.info_list:
         stream_port = args.stream
         subtitles = args.subtitles
-        downloader.stream(stream_port=stream_port, subtitles=subtitles)
+        downloader.stream(stream_port=stream_port, subtitles=subtitles, udp=args.udp)
