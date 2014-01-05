@@ -213,11 +213,12 @@ class Downloader(object):
         else:
             logging.warning("Couldn't find video file with extension: {}", extension)
 
-    def download(self):
-        for elem in self.info_list:
-            info = elem
-            if info['ext'] == 'mp4':
-                break
+    def download(self, video_format):
+        try:
+            info = random.choice([i for i in self.info_list if i['ext'] in video_format])
+        except IndexError:
+            logging.warning("Video avec format choisit ({}) non trouvé.".format(video_format))
+            return None
 
         response = session.get(info['url'], stream=True)
         total_length = response.headers.get('content-length')
@@ -394,7 +395,7 @@ def run():
     else:
         query = args.query
 
-        if is_raw_url(url) or urlparse(query).scheme:
+        if is_raw_url(query) or urlparse(query).scheme or is_local_file(query):
             logging.warning("Can't do search on urls")
         else:
             search_result = site.search(query)
@@ -412,7 +413,12 @@ def run():
         extension = args.play
         player = args.player
         downloader.play(extension=extension, player=player)
+
     elif args.stream and downloader.info_list:
         stream_port = args.stream
         subtitles = args.subtitles
         downloader.stream(stream_port=stream_port, subtitles=subtitles, udp=args.udp)
+
+    elif args.download and downloader.info_list:
+        video_format = args.download
+        downloader.download(video_format)
