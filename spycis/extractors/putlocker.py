@@ -59,7 +59,6 @@ class PutlockerExtractor(BaseExtractor):
             logging.error("{}".format(e))
             return None
 
-        video_title = pq('#file_title').text() if pq('#file_title').text() else 'sans titre'
         pq = PyQuery(api_response.content)
         try:
             video_url = pq('[url]:last').attr('url')
@@ -72,6 +71,11 @@ class PutlockerExtractor(BaseExtractor):
         except (AttributeError, IndexError):
             logging.error('Couldnt get extension from url: {}'.format(video_url))
             return None
+
+        if pq('#file_title').text():
+            video_title = pq('#file_title').text()
+        else:
+            video_title = '{}{}'.format(video_id, video_extension)
 
         video_duration = pq('[url]:last').attr('duration')
         video_thumbnail = pq('[type^=image]').attr('url')
