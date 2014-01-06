@@ -5,25 +5,23 @@ import re
 from pyquery import PyQuery
 
 from .common import BaseExtractor
-from spycis.utils import session, RequestException, unpacker
-from spycis.compat import unquote, urlparse
+from spycis.utils import session, urlparse, RequestException, unquote, unpacker
 
 
-class VidbullExtractor(BaseExtractor):
+class YouWatchExtractor(BaseExtractor):
 
-    """ vidbull.com extractor"""
+    """ youwatch.org extractor"""
 
     def __init__(self):
-        super(VidbullExtractor, self).__init__()
-        self.host_list = ("vidbull.com")
-        self.holder_url = "http://vidbull.com/{}.html"
-        self.holder_embed_url = "http://vidbull.com/embed-{}-640x318.html"
-        self.regex_url = re.compile(r'https?://(?:www.)?vidbull\.com/(?:embed-)?(?P<id>\w+)(?:\-\d+x\d+)?.html')
-        self.example_urls = ("http://vidbull.com/73dldxrrq0ly.html",
-                             "http://vidbull.com/embed-73dldxrrq0ly.html",)
+        super(YouWatchExtractor, self).__init__()
+        self.host_list = ["youwatch.org"]
+        self.holder_url = "http://youwatch.org/{}"
+        self.holder_embed_url = "http://youwatch.org/embed-{}-640x360.html"
+        self.regex_url = re.compile(r'https?://(?:www.)?youwatch.org/(?:embed-)?(?P<id>\w+)(?:\-\d+x\d+)?')
+        self.example_urls = ("http://youwatch.org/u44k6agz7l2w", "http://youwatch.org/embed-u44k6agz7l2w-640x360.html")
 
     def extract(self, video_id_or_url):
-        """Extract raw info from vidbull stream url"""
+        """Extract info from a youwatch.org stream url"""
         if self.regex_url.match(video_id_or_url):
             video_id = self.regex_url.match(video_id_or_url).group('id')
         else:
@@ -31,27 +29,15 @@ class VidbullExtractor(BaseExtractor):
         dest_url = self.holder_url.format(video_id)
 
         try:
-            res = session.get(dest_url, timeout=3)
+            res = session.get(self.holder_embed_url.format(video_id), timeout=3)
         except RequestException as e:
             logging.error("{}".format(e))
             return None
 
         pq = PyQuery(res.content)
 
-        video_title = re.sub(r'Verifying Video Request\s+-\s+', '', pq('h3').text())
-
-        try:
-            embed_url = self.holder_embed_url.format(video_id)
-            res = session.get(embed_url, timeout=3)
-        except RequestException as e:
-            logging.error("{}".format(e))
-            return None
-
-        pq = PyQuery(res.content)
-
-        packed_javascript = re.sub(r'\\', '', pq('#player_code script:not([src])').text())
+        packed_javascript = re.sub(r'\\', '', pq('script:contains("eval")').text())
         rgx = re.compile(r"}\('(.+)',(\d+),(\d+),'([\w|]+)'")
-
         try:
             parg1 = re.search(rgx, packed_javascript).group(1)
             parg2 = int(re.search(rgx, packed_javascript).group(2))
@@ -65,7 +51,7 @@ class VidbullExtractor(BaseExtractor):
         try:
             video_url = re.search('file:"(http://.*?)"', clean_javascript).group(1)
         except AttributeError:
-            logging.error("Couldn't find video url in unpacked javascript".format(video_title))
+            logging.error("Couldn't find video url in unpacked javascript")
             return None
 
         try:
@@ -75,9 +61,11 @@ class VidbullExtractor(BaseExtractor):
             return None
 
         try:
-            video_thumbnail = re.search('image:"(http://.*?)"', clean_javascript).group(1)
-        except AttributeError:
-            pass
+            video_title = '.'.join(pq('title').text().split())
+            assert(video_title)
+        except:
+            logging.debug('Couldnt find video title, using generic')
+            video_title = "{}{}".format(video_id, video_extension)
 
         info = {
             "id": video_id,
@@ -86,7 +74,6 @@ class VidbullExtractor(BaseExtractor):
             "ext": video_extension,
 
             "extractor": self.name,
-            "thumbnail": video_thumbnail,
             "webpage_url": dest_url,
         }
         return info

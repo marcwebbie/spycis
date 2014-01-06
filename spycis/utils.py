@@ -1,4 +1,5 @@
 import os
+import re
 from mimetypes import guess_extension, guess_type
 import requests
 from requests.exceptions import RequestException
@@ -23,6 +24,13 @@ def baseconv(number, base=10):
         result = alphabet[i] + result
 
     return result or alphabet[0]
+
+
+def unpacker(p, a, c, k, e=None, d=None):
+    for c in reversed(range(c)):
+        if(k[c]):
+            p = re.sub(r'\b' + baseconv(c, base=a) + r'\b', k[c], p)
+    return p
 
 
 class Color(object):
