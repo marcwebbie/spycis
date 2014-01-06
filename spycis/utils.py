@@ -1,10 +1,9 @@
 import os
+from mimetypes import guess_extension, guess_type
 import requests
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # fallback to python2
-    from urlparse import urlparse
+
+from .compat import *
+from .extractors import get_instances
 
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1674.0 Safari/537.36"
@@ -41,3 +40,32 @@ def get_absolute_path(path):
     parsed = urlparse.urlparse(url)
     filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
     return filepath
+
+
+def is_raw_url(url):
+    parsed_url = urlparse(url)
+    url_scheme = parsed_url.scheme
+    url_path = parsed_url.path
+    try:
+        url_extension = guess_extension(guess_type(parsed_url.path)[0])
+    except AttributeError:
+        return None
+
+    valid_extensions = ('.flv', '.mp4', '.avi', '.mkv', '.m4v', '.webm', '.mp3', '.aac', '.ogg')
+    valid_schemes = ('http', 'https', 'ftp', 'udp')
+
+    if url_scheme in valid_schemes and url_extension in valid_extensions:
+        return True
+    else:
+        return False
+
+
+def is_stream_url(url):
+    return any(extractor.is_valid_url(url) for extractor in get_instances())
+
+
+def is_local_file(path):
+    parsed = urlparse(path)
+    filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
+
+    return os.path.isfile(filepath)

@@ -1,4 +1,22 @@
 
+class Media(object):
+    TVSHOW = "tv-show"
+    FILM = "film"
+    SONG = "song"
+
+    def __init__(self, title, url, wrapper, category, *args, **kwargs):
+        self.title = title
+        self.url = url
+        self.wrapper = wrapper
+        self.category = category
+
+        self.description = kwargs.get("description", None)
+        self.thumbnail = kwargs.get("thumbnail", None)
+        self.tags = kwargs.get("tags", [])
+        self.rating = kwargs.get("rating", None)
+        self.year = kwargs.get("year", None)
+
+
 class BaseWrapper(object):
 
     def __init__(self):
@@ -20,20 +38,6 @@ class BaseWrapper(object):
 
     def search(self, query):
         """Search the wrapped site with the given query,
-        return of dicts containg media infos matching search results
-
-        Expected keys
-            title
-            url
-        Optional keys:
-            description # long description as string
-            thumbnail # url to thumbail image
-            tags # should be a list
-            rating # should be double
-            year
-
-        example:
-            {'title': 'TPB AFK', 
-             'url': 'http://www.example.com/films/tpb-afk/'}
+        return of media objects containg media infos matching search results
         """
         raise NotImplementedError("Method not overriden by subclass")

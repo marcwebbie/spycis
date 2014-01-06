@@ -3,7 +3,7 @@ import re
 from pyquery import PyQuery
 
 from spycis.utils import session
-from .common import BaseWrapper
+from .common import BaseWrapper, Media
 
 
 class TubeplusWrapper(BaseWrapper):
@@ -33,6 +33,10 @@ class TubeplusWrapper(BaseWrapper):
             return "http://www.vidbux.com/embed-{}.html".format(video_id)
         elif host in ("180upload.com", "180upload.nl"):
             return "http://180upload.com/embed-{}.html".format(video_id)
+        elif host in ("sockshare.com"):
+            return "http://www.sockshare.com/embed/{}".format(video_id)
+        elif host in ("novamov.com"):
+            return "http://embed.novamov.com/embed.php?v={}".format(video_id)
         else:
             return None
 
@@ -50,6 +54,7 @@ class TubeplusWrapper(BaseWrapper):
                 episode = episode.strip('0')
             except AttributeError:
                 logging.warning("Malformed code not in format s[SS]e[EE]".format(code))
+                raise StopIteration()
 
             season_links_text = ' '.join(pq(a).attr('href') for a in pq('.season'))
 
@@ -64,7 +69,6 @@ class TubeplusWrapper(BaseWrapper):
             response = session.get(episode_url)
             pq = PyQuery(response.content)
 
-        # url_list = []
         for link in (pq(href).attr('href') for href in pq('.link>a[href^="javascript:show"]')):
             match = re.search(r'\((.*?),(.*?),(.*?)\)', link.replace(' ', ''))
             if match:
@@ -74,53 +78,70 @@ class TubeplusWrapper(BaseWrapper):
                 if stream_url:
                     logging.info("Built stream url: {}, from id: {}, host: {}, link: {}".format(stream_url, video_id, host, link))
                     yield stream_url
-                    # url_list.append(stream_url)
                 else:
                     logging.warning("Couldn't build stream url from id: {}, host: {}".format(video_id, host))
             else:
                 logging.warning("Couldn't extract stream url from url: {}".format(url))
 
-        # return url_list
+    def _search_tv_shows(self, query):
+        logging.debug('Searching tv-shows: {}'.format(query))
 
-    def search(self, query):
         search_result = []
 
-        # tv shows
         search_url = self.site_url + "/search/tv-shows/"
         response = session.get(search_url + query)
         pq = PyQuery(response.content)
 
         for elem in pq('#main .list_item'):
-            media = {}
-            media['title'] = pq(elem).find('.right>a>b').text()
-            media['url'] = "{}{}".format(self.site_url, pq(elem).find('.right>a').attr('href'))
-            media['description'] = pq(elem).find('.right>a').text().replace('\n', ' ')
-            media['year'] = pq(elem).find('.frelease').text().split('-')[0]
-            media['tags'] = ["tv-show"]
-            media['thumbnail'] = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
+            title = pq(elem).find('.right>a>b').text()
+            url = "{}{}".format(self.site_url, pq(elem).find('.right>a').attr('href'))
+            wrapper = self.name
+            category = Media.TVSHOW
+
+            media = Media(title, url, wrapper, category)
+
+            media.description = pq(elem).find('.right>a').text().replace('\n', ' ')
+            media.year = pq(elem).find('.frelease').text().split('-')[0]
+            media.tags = ["tv-show"]
+            media.thumbnail = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
             try:
-                media['rating'] = eval(pq(elem).find('.rank_value').text())
+                media.rating = eval(pq(elem).find('.rank_value').text())
             except:
                 pass
+
             search_result.append(media)
 
-        # films
+        return search_result
+
+    def _search_films(self, query):
+        logging.debug('Searching tv-shows: {}'.format(query))
+
+        search_result = []
+
         search_url = self.site_url + "/search/movies/"
         response = session.get(search_url + query)
         pq = PyQuery(response.content)
 
         for elem in pq('#main .list_item'):
-            media = {}
-            media['title'] = pq(elem).find('.right>a>b').text()
-            media['url'] = "{}{}".format(self.site_url, pq(elem).find('.right>a').attr('href'))
-            media['description'] = pq(elem).find('.right>a').text().replace('\n', ' ')
-            media['year'] = pq(elem).find('.frelease').text().split('-')[0]
-            media['tags'] = ["film"]
-            media['thumbnail'] = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
+            title = pq(elem).find('.right>a>b').text()
+            url = "{}{}".format(self.site_url, pq(elem).find('.right>a').attr('href'))
+            wrapper = self.name
+            category = Media.FILM
+
+            media = Media(title, url, wrapper, category)
+
+            media.description = pq(elem).find('.right>a').text().replace('\n', ' ')
+            media.year = pq(elem).find('.frelease').text().split('-')[0]
+            media.tags = [category]
+            media.thumbnail = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
             try:
-                media['rating'] = eval(pq(elem).find('.rank_value').text())
+                media.rating = eval(pq(elem).find('.rank_value').text())
             except:
                 pass
+
             search_result.append(media)
 
         return search_result
+
+    def search(self, query):
+        return self._search_tv_shows(query) + self._search_films(query)
