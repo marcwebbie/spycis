@@ -101,7 +101,10 @@ class TubeplusWrapper(BaseWrapper):
             media = Media(title, url, wrapper, category)
 
             media.description = pq(elem).find('.right>a').text().replace('\n', ' ')
-            media.year = pq(elem).find('.frelease').text().split('-')[0]
+            try:
+                media.year = pq(elem).find('.frelease').text().split('-')[0]
+            except:
+                media_year = None
             media.tags = ["tv-show"]
             media.thumbnail = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
             try:
@@ -131,7 +134,10 @@ class TubeplusWrapper(BaseWrapper):
             media = Media(title, url, wrapper, category)
 
             media.description = pq(elem).find('.right>a').text().replace('\n', ' ')
-            media.year = pq(elem).find('.frelease').text().split('-')[0]
+            try:
+                media.year = pq(elem).find('.frelease').text().split('-')[0]
+            except:
+                media_year = None
             media.tags = [category]
             media.thumbnail = "{}{}".format(self.site_url, pq(elem).find('.left img').attr('src'))
             try:

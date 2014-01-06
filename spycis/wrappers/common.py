@@ -1,3 +1,5 @@
+import re
+
 
 class Media(object):
     TVSHOW = "tv-show"
@@ -16,11 +18,28 @@ class Media(object):
         self.rating = kwargs.get("rating", None)
         self.year = kwargs.get("year", None)
 
+    def __str__(self):
+        return "<Media: {0.title}, {0.category}, {0.wrapper}>".format(self)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class BaseWrapper(object):
 
     def __init__(self):
         self.site_url = None
+
+    @staticmethod
+    def _parse_episode_code(code):
+        try:
+            season, episode = re.match(r's(\w+)e(\w+)', code.lower()).groups()
+            season = int(season.strip('0'))
+            episode = int(episode.strip('0'))
+        except:
+            raise ValueError("Not a valid code")
+
+        return season, episode
 
     @property
     def name(self):

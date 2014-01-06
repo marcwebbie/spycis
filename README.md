@@ -240,14 +240,48 @@ spycis --stream 8080 --subtitles vampire_soustitres.srt http://s63.coolcdn.ch/dl
 spycis --stream 8080 --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
 ```
 
+
 ### 5. Avancée
 
-##### Voir la version installée de spycis
+###### Lister les sites disponibles
+
+```bash
+spycis --site-list all
+```
+
+###### Faire recherche sur un site alternatif
+
+```bash
+# Rechercher au avec le site "loveserie" les stream urls pour deadwood
+spycis --site loveserie -s s01e08 deadwood
+```
+
+###### Example output:
+
+```bash
+# Sur le site loveserie, les urls se terminent par version, VO, VF ou VOST
+http://youwatch.org/yo6zw5x7mm3j?version=VOST
+http://youwatch.org/xlj7ydr2qvgv?version=VF
+http://www.duckstreaming.com/bd9pa3qyxtuf?version=VF
+```
+
+
+###### Obtenir les raw urls pour la version VF de la dernière recherche
+
+```bash
+spycis http://youwatch.org/xlj7ydr2qvgv?version=VF
+```
+###### Example output:
+
+```bash
+http://fs9.youwatch.org:8777/qpv7qhlbewoax3ptxyqintpev7cqy5r3ucn2tbgfungna5sqvl3jwh4jpy/video.mp4
+```
+
+###### Voir la version de spycis installé
 
 ```bash
 spycis --version
 ```
-
 ###### Example output:
 ```bash
 Spycis v0.0.1
@@ -263,7 +297,7 @@ There is NO WARRANTY, to the extent permitted by law.
 spycis --verbose 'lion king'
 
 # Pour avoir plus d'information de debogage
-spycis --vv 'lion king'
+spycis -vv 'lion king'
 ```
 
 ##### Changer le nombre de threads utilisé par `3`
