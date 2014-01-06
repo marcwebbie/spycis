@@ -35,6 +35,9 @@ from spycis.utils import (
 )
 
 
+__version__ = "0.0.2-dev"
+
+
 class LogFormatter(logging.Formatter):
     color = {
         "HEADER": '\033[95m',       # magenta
@@ -66,7 +69,7 @@ def get_logger():
 
 
 def get_version():
-    return "not set"
+    return "Spycis v{}".format(__version__)
 
 
 def get_args():
@@ -85,6 +88,7 @@ def get_args():
 
     aparser.add_argument("-v", "--verbose", action="count", help="active le mode verbose pour debugging")
     aparser.add_argument("--site", default="tubeplus", help="Changer le site de recherche. ex: `--site sitename`")
+    aparser.add_argument("--site-list", action="store_true", help="lister les sites de recherche disponibles")
     aparser.add_argument("--workers", action="store", type=int, default=4,
                          help="Nombre des threads pour l'extraction des urls ex: `--workers 20`")
     aparser.add_argument("--version", action='version', version=get_version(), help="imprime version et quitte")
@@ -117,9 +121,9 @@ def run(args):
 
     downloader = Downloader(workers=args.workers, raw_url_info=raw_url_info)
     site = wrappers.get_instance(args.site)
-    if not site:
+    if not site or args.site_list:
         print_available_sites()
-        return 1
+        return
 
     if site.is_valid_url(url=args.query):
         logging.debug("Found a valid url for site: '{}'".format(args.query))

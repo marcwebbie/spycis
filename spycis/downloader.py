@@ -146,7 +146,7 @@ class Downloader(object):
         try:
             info = random.choice([i for i in self.info_list if i['ext'] in extension])
         except IndexError:
-            logging.error("Video with extesion specified ({}) not found.".format(extension))
+            logging.warning("Video with extesion specified ({}) not found.".format(extension))
             return None
 
         command = [

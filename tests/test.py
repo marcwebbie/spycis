@@ -54,6 +54,12 @@ python2 -m spycis -r s02e03 "Vampire Diaries"
 python2 -m spycis -p 1 -s s01e16 house
 python2 -m spycis -p 1 -s r01e16 house
 python2 -m spycis -p 30 "Lion King"
+python2 -m spycis --site-list all
+python2 -m spycis --site loveserie -s s01e08 deadwood
+python2 -m spycis http://youwatch.org/xlj7ydr2qvgv?version=VF
+python2 -m spycis --version
+python2 -m spycis --workers 3 'lion king'
+python2 -m spycis -vv 'lion king'
 echo "tests ok"
 """
 
