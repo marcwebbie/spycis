@@ -37,12 +37,10 @@ class MovreelExtractor(BaseExtractor):
 
         pq = PyQuery(response.content)
 
-        httpbin_url = "http://requestb.in/1evao721"
         headers = {'Referer': dest_url, 'Origin': 'http://movreel.com'}
         post_data = {elem.attr('name'): elem.val() for elem in pq('form input[name]').items()}
         try:
             # post form_data to the same page to get real file page
-            rbin = session.post(httpbin_url, data=post_data, headers=headers)
             res = session.post(dest_url, data=post_data, headers=headers)
         except:
             logging.error('Error trying to request page at url: {}'.format(dest_url))
