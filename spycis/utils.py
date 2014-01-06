@@ -46,7 +46,7 @@ def set_color(s, color):
 
 
 def get_absolute_path(path):
-    parsed = urlparse.urlparse(url)
+    parsed = urlparse(path)
     filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
     return filepath
 

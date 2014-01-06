@@ -108,7 +108,7 @@ def print_available_sites():
     print("")
 
 
-def run(args):
+def run(args=get_args()):
     # print(args)
 
     logger = get_logger()
@@ -143,7 +143,8 @@ def run(args):
         downloader.extract([url])
 
     elif is_raw_url(url=args.query):
-        parsed_url = urlparse(args.query)
+        url = args.query
+        parsed_url = urlparse(url)
         title = os.path.basename(parsed_url.path)
         extension = guess_extension(guess_type(parsed_url.path)[0])
 
@@ -157,14 +158,14 @@ def run(args):
 
     elif is_local_file(path=args.query):
         """Ajoute le fichier local a la liste de infos du Downloader"""
-        filepath = urlparse(get_absolute_path(args.query)).path
+        filepath = get_absolute_path(args.query)
         title = os.path.basename(filepath)
         extension = guess_extension(guess_type(title)[0])
 
         info = {
             "id": "unknown",
             "title": title,
-            "url": url,
+            "url": filepath,
             "ext": extension,
         }
         downloader.info_list.append(info)
@@ -253,7 +254,7 @@ def run(args):
 
 if __name__ == '__main__':
     try:
-        run(args=get_args())
+        run()
     except KeyboardInterrupt:
-        pass
+        sys.stderr.flush()
         print("")

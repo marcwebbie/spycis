@@ -132,10 +132,7 @@ class Downloader(object):
             ]
 
             addr = socket.gethostbyname(socket.gethostname())
-            sys.stderr.write(' * Streaming from: {}:{}\n'.format(addr, stream_port))
-            sys.stderr.write('\n'.format(addr))
-            sys.stderr.flush()
-
+            print(' * Streaming from: {}:{}\n'.format(addr, stream_port))
             return subprocess.call(cmd)
         else:
             sys.stderr.write("Couldn't find a match url for the stream\n")
@@ -144,7 +141,7 @@ class Downloader(object):
 
     def play(self, extension, player):
         try:
-            info = random.choice([i for i in self.info_list if i['ext'] in extension])
+            info = random.choice([i for i in self.info_list if extension in i['ext']])
         except IndexError:
             logging.warning("Video with extesion specified ({}) not found.".format(extension))
             return None
@@ -162,7 +159,7 @@ class Downloader(object):
 
     def download(self, extension):
         try:
-            info = random.choice([i for i in self.info_list if i['ext'] in extension])
+            info = random.choice([i for i in self.info_list if extension in i['ext']])
         except IndexError:
             logging.warning("Video with extesion specified ({}) not found.".format(extension))
             return None
