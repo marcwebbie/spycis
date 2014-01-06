@@ -116,6 +116,19 @@ class ExtractorsTests(unittest.TestCase):
         self.assertIn("ext", info.keys())
 
     def test_gorillavid(self):
+        extractor = extractors.get_extractor(name="gorillavid")
+        self.assertIsNotNone(extractor)
+
+        url = "http://gorillavid.in/kdk7i5r1p5ye.html"
+        embed_url = "http://gorillavid.in/embed-kdk7i5r1p5ye.html"
+
+        info = extractor.extract(embed_url)
+        self.assertIsInstance(info, dict)
+
+        self.assertIn("id", info.keys())
+        self.assertIn("title", info.keys())
+        self.assertIn("url", info.keys())
+        self.assertIn("ext", info.keys())
         pass
 
 if __name__ == "__main__":
