@@ -105,7 +105,7 @@ def print_available_sites():
 
 
 def run(args):
-    print(args)
+    # print(args)
 
     logger = get_logger()
     if args.verbose:

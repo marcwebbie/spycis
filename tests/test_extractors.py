@@ -59,10 +59,10 @@ class ExtractorsTests(unittest.TestCase):
         extractor = extractors.get_extractor(name="vidbull")
         self.assertIsNotNone(extractor)
 
-        url = "http://vidbull.com/98acfr8i6pq4.html"
-        embed_url = "http://vidbull.com/embed-98acfr8i6pq4.html"
+        url = "http://vidbull.com/73dldxrrq0ly.html"
+        embed_url = "http://vidbull.com/embed-73dldxrrq0ly.html"
 
-        info = extractor.extract(url)
+        info = extractor.extract(embed_url)
         self.assertIsInstance(info, dict)
 
         self.assertIn("id", info.keys())

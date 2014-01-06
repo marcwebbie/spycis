@@ -30,9 +30,9 @@ class MovreelExtractor(BaseExtractor):
         dest_url = self.holder_url.format(video_id)
 
         try:
-            response = session.get(dest_url)
-        except:
-            logging.error('Error trying to request page at url: {}'.format(dest_url))
+            response = session.get(dest_url, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
             return None
 
         pq = PyQuery(response.content)
@@ -41,9 +41,9 @@ class MovreelExtractor(BaseExtractor):
         post_data = {elem.attr('name'): elem.val() for elem in pq('form input[name]').items()}
         try:
             # post form_data to the same page to get real file page
-            res = session.post(dest_url, data=post_data, headers=headers)
-        except:
-            logging.error('Error trying to request page at url: {}'.format(dest_url))
+            res = session.post(dest_url, data=post_data, headers=headers, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
             return None
 
         pq = PyQuery(res.content)

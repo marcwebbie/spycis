@@ -5,7 +5,15 @@ import re
 from pyquery import PyQuery
 
 from .common import BaseExtractor
-from spycis.utils import session, baseconv
+from spycis.utils import session, baseconv, RequestException
+from spycis.compat import unquote, urlparse
+
+
+def unpacker(p, a, c, k, e=None, d=None):
+    for c in reversed(range(c)):
+        if(k[c]):
+            p = re.sub(r'\b' + baseconv(c, base=a) + r'\b', k[c], p)
+    return p
 
 
 class VidbullExtractor(BaseExtractor):
@@ -14,75 +22,78 @@ class VidbullExtractor(BaseExtractor):
 
     def __init__(self):
         super(VidbullExtractor, self).__init__()
-        self.host_list = ["vidbull.com"]
-        self.holder_url = "http://vidbull.com/embed-{}-800x600.html"
-        self.regex_url = re.compile(r'https?://(?:www.)?vidbull\.com/(?:embed\-)?(?P<id>\w+?)(?:\-\d+x\d+)?\.html')
-        self.example_urls = ["http://vidbull.com/98acfr8i6pq4.html",
-                             "http://vidbull.com/embed-98acfr8i6pq4-650x328.html",
-                             "http://vidbull.com/embed-hkvelwsmgsm0-650x328.html"]
+        self.host_list = ("vidbull.com")
+        self.holder_url = "http://vidbull.com/{}.html"
+        self.holder_embed_url = "http://vidbull.com/embed-{}-640x318.html"
+        self.regex_url = re.compile(r'https?://(?:www.)?vidbull\.com/(?:embed-)?(?P<id>\w+)(?:\-\d+x\d+)?.html')
+        self.example_urls = ("http://vidbull.com/73dldxrrq0ly.html",
+                             "http://vidbull.com/embed-73dldxrrq0ly.html",)
 
     def extract(self, video_id_or_url):
-        """Extract info from stream url"""
-        info = {}
-
-        info['extractor'] = self.name
-
+        """Extract raw info from vidbull stream url"""
         if self.regex_url.match(video_id_or_url):
-            info['id'] = self.regex_url.match(video_id_or_url).group('id')
+            video_id = self.regex_url.match(video_id_or_url).group('id')
         else:
-            info['id'] = video_id_or_url
-        dest_url = self.holder_url.format(info['id'])
+            video_id = video_id_or_url
+        dest_url = self.holder_url.format(video_id)
 
-        # Get file url
         try:
-            response = session.get(dest_url)
+            res = session.get(dest_url, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
+            return None
+
+        pq = PyQuery(res.content)
+
+        video_title = re.sub(r'Verifying Video Request\s+-\s+', '', pq('h3').text())
+
+        try:
+            embed_url = self.holder_embed_url.format(video_id)
+            res = session.get(embed_url, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
+            return None
+
+        pq = PyQuery(res.content)
+
+        packed_javascript = re.sub(r'\\', '', pq('#player_code script:not([src])').text())
+        rgx = re.compile(r"}\('(.+)',(\d+),(\d+),'([\w|]+)'")
+
+        try:
+            parg1 = re.search(rgx, packed_javascript).group(1)
+            parg2 = int(re.search(rgx, packed_javascript).group(2))
+            parg3 = int(re.search(rgx, packed_javascript).group(3))
+            parg4 = re.search(rgx, packed_javascript).group(4).split('|')
+            clean_javascript = unquote(unpacker(parg1, parg2, parg3, parg4))
         except:
-            logging.error('Error trying to request page at url: {}'.format(dest_url))
-
-        pq = PyQuery(response.content)
-
-        javascript = pq('script:contains("eval")').text()
-        try:
-            param_list = re.search(r"'([\w\|]*jwplayer)'.split", javascript).group(1)
-            param_list = param_list.split('|')
-
-            # file url is obfuscated using base 36 convertions
-            file_symbol_index = param_list.index('file')
-            file_symbol_letter = baseconv(int(file_symbol_index), base=36)
-            regex_file_url = '\\{{{0}:"(.*?)",'.format(file_symbol_letter)
-            obfuscated_file_url = re.search(regex_file_url, javascript).group(1)
-
-            # deobfuscate url
-            real_file_url = re.sub(
-                r'\w+',
-                lambda x: str(param_list[int(x.group(), 36)] if param_list[int(x.group(), 36)] else x.group()),
-                obfuscated_file_url
-            )
-            info['url'] = real_file_url
-        except (AttributeError, ValueError):
             logging.debug("Couldn't parse obfuscated javascript: {}".format(pq('span').text()))
             return None
 
-        # Get file extension
         try:
-            info['ext'] = guess_extension(guess_type(info['url'])[0]).strip('.')
-        except (AttributeError, IndexError):
-            logging.error('Couldnt get extension from url: {}'.format(info['url']))
+            video_url = re.search('file:"(http://.*?)"', clean_javascript).group(1)
+        except AttributeError:
+            logging.error("Couldn't find video url in unpacked javascript".format(video_title))
             return None
 
-        # Get thumbnail url
         try:
-            info['thumbnail'] = re.search(r'http://.*?\.jpg', response.text).group(1)
+            video_extension = guess_extension(guess_type(urlparse(video_url).path)[0])
         except:
+            logging.error("Couldn't extract video extension from url: {}".format(video_url))
+            return None
+
+        try:
+            video_thumbnail = re.search('image:"(http://.*?)"', clean_javascript).group(1)
+        except AttributeError:
             pass
 
-        # Get title
-        try:
-            response = session.get("http://vidbull.com/{}.html".format(info['id']))
-            pq = PyQuery(response.content)
-            info['title'] = pq('title').text().replace('VidBull - Watch ', '')
-        except:
-            logging.warn('Couldnt get title from url: {}'.format(response.url))
-            return None
+        info = {
+            "id": video_id,
+            "title": video_title,
+            "url": video_url,
+            "ext": video_extension,
 
+            "extractor": self.name,
+            "thumbnail": video_thumbnail,
+            "webpage_url": dest_url,
+        }
         return info

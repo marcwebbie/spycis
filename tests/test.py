@@ -47,7 +47,17 @@ class WrappersTests(unittest.TestCase):
 
 class InterfaceTests(unittest.TestCase):
 
-    """ test the minimal interface that spycis must have """
+    """Test the minimal interface that spycis must have 
+
+    python2 -m spycis mentalist
+    python2 -m spycis http://www.tubeplus.me/player/553643/The_Lion_King/
+    python2 -m spycis http://www.divxstage.eu/video/46b593256e86d
+    python2 -m spycis -s s02e03 "Vampire Diaries"
+    python2 -m spycis -r s02e03 "Vampire Diaries"
+    python2 -m spycis -p 1 -s s01e16 house
+    python2 -m spycis -p 1 -s r01e16 house
+    python2 -m spycis -p 30 "Lion King"
+    """
 
     def setUp(self):
         self.original_stdout = sys.stdout
@@ -60,11 +70,17 @@ class InterfaceTests(unittest.TestCase):
         sys.stderr = self.original_stderr
 
     def assertContainsRawUrl(self, container):
-        valid_formats = ("mp4", "flv", "avi", "mkv", "mp3")
+        valid_formats = (u"mp4", u"flv", u"avi", u"mkv", u"mp3")
+        if not any(True for f in valid_formats if f in container):
+            self.original_stdout.write(container)
+            self.original_stderr.write(container)
         self.assertTrue(any(True for f in valid_formats if f in container))
 
     def assertContainsStreamUrl(self, container):
         extractor_names = (w.name for w in extractors.get_instances())
+        if not any(True for name in extractor_names if name in container):
+            self.original_stdout.write(container)
+            self.original_stderr.write(container)
         self.assertTrue(any(True for name in extractor_names if name in container))
 
     def test_basic_search_with_query(self):
@@ -79,7 +95,9 @@ class InterfaceTests(unittest.TestCase):
         self.assertIn("tv-show", output)
         self.assertIn("film", output)
 
-    def test_basic_search_get_stream_urls_for_a_media_url(self):
+    def test_basic_search_returns_stream_urls_for_a_media_url(self):
+        """spycis http://www.tubeplus.me/player/553643/The_Lion_King/
+        """
         query = "http://www.tubeplus.me/player/553643/The_Lion_King/"
         args = Args(query=query)
 
@@ -88,8 +106,10 @@ class InterfaceTests(unittest.TestCase):
 
         self.assertContainsStreamUrl(output)
 
-    def test_basic_search_get_raw_urls_for_stream_url(self):
-        query = "http://www.putlocker.com/embed/A17E6D66F6D1D44B"
+    def test_basic_search_returns_raw_urls_for_stream_url(self):
+        """spycis http://www.divxstage.eu/video/46b593256e86d
+        """
+        query = "http://www.divxstage.eu/video/46b593256e86d"
         args = Args(query=query)
 
         __main__.run(args)
@@ -111,8 +131,8 @@ class InterfaceTests(unittest.TestCase):
         self.assertContainsStreamUrl(output)
 
     def test_search_shortcuts_get_raw_urls_by_episode_code(self):
-        '''spycis -r s02e03 "Vampire Diaries"
-        '''
+        """spycis -r s02e03 "Vampire Diaries"
+        """
 
         query = "Vampire Diaries"
         episode_code = "s02e03"
@@ -124,12 +144,13 @@ class InterfaceTests(unittest.TestCase):
         self.assertContainsRawUrl(output)
 
     def test_search_shortcuts_get_stream_urls_by_episode_code_and_position(self):
-        """spycis -p 2 -s s01e01 dead
+        """spycis -p 1 -s s01e16 house
         """
 
-        query = "dead"
-        episode_code = "s01e01"
-        args = Args(query=query, position=2, stream_urls=episode_code)
+        query = "house"
+        episode_code = "s01e16"
+        position = 2
+        args = Args(query=query, position=position, stream_urls=episode_code)
 
         __main__.run(args)
         output = sys.stdout.getvalue()
@@ -137,12 +158,13 @@ class InterfaceTests(unittest.TestCase):
         self.assertContainsStreamUrl(output)
 
     def test_search_shortcuts_get_raw_urls_by_episode_code_and_position(self):
-        """spycis -p 2 -r s01e01 dead
+        """spycis -p 1 -r r01e16 house
         """
 
-        query = "dead"
-        episode_code = "s01e01"
-        args = Args(query=query, position=2, raw_urls=episode_code)
+        query = "house"
+        episode_code = "s01e16"
+        position = 2
+        args = Args(query=query, position=position, raw_urls=episode_code)
 
         __main__.run(args)
         output = sys.stdout.getvalue()
@@ -160,6 +182,7 @@ class InterfaceTests(unittest.TestCase):
         output = sys.stdout.getvalue()
 
         self.assertContainsRawUrl(output)
+
 
 if __name__ == "__main__":
     unittest.main()

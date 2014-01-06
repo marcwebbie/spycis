@@ -12,3 +12,4 @@ else:
     from urlparse import urlparse, urlunparse
     from StringIO import StringIO
     input = raw_input
+    str = unicode

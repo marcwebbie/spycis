@@ -4,6 +4,7 @@ import re
 
 from .common import BaseExtractor
 from spycis.utils import session
+from spycis.compat import *
 
 
 class NowVideoExtractor(BaseExtractor):
@@ -19,19 +20,19 @@ class NowVideoExtractor(BaseExtractor):
                              "http://embed.nowvideo.sx/embed.php?v=hanu11wjzx2d7"]
 
     def extract(self, video_id_or_url):
-        info = {}
-
-        info['extractor'] = self.name
-
         if self.regex_url.match(video_id_or_url):
-            info['id'] = self.regex_url.match(video_id_or_url).group('id')
+            video_id = self.regex_url.match(video_id_or_url).group('id')
         else:
-            info['id'] = video_id_or_url
+            video_id = video_id_or_url
 
         # get url
-        dest_url = self.holder_url.format(info['id'])
+        dest_url = self.holder_url.format(video_id)
 
-        response = session.get(dest_url)
+        try:
+            response = session.get(dest_url, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
+            return None
 
         # find params for api call
         query_params = {}
@@ -41,38 +42,45 @@ class NowVideoExtractor(BaseExtractor):
         except:
             logging.error("Couldn't find key param for api call from: {}".format(dest_url))
             return None
-        query_params['file'] = info['id']
+
+        query_params['file'] = video_id
         query_params['cid'] = "undefined"
         query_params['cid2'] = "undefined"
         query_params['cid3'] = "undefined"
         query_params['user'] = "undefined"
         query_params['pass'] = "undefined"
 
-        # fetch response with containing raw url
-        api_url = "http://www.nowvideo.sx/api/player.api.php"
-        api_response = session.get(api_url, params=query_params)
+        try:
+            # fetch response with raw url
+            api_url = "http://www.nowvideo.sx/api/player.api.php"
+            api_response = session.get(api_url, params=query_params, timeout=3)
+        except RequestException as e:
+            logging.error("{}".format(e))
+            return None
 
         try:
-            match = re.match(r'url=(http://.*?(?:\.flv|\.mp4|\.avi|\.mkv))&', api_response.text)
-            url_found = match.group(1)
-        except (IndexError, AttributeError):
+            api_regex = re.compile(r'url=(?P<raw_url>.*?)(?:&title=)(?P<title>.*?)%')
+            api_dict = api_regex.search(api_response.text).groupdict()
+            video_url, video_title = unquote(api_dict["raw_url"]), unquote(api_dict["title"])
+            assert(video_url)
+        except (AttributeError, AssertionError):
             logging.info('url was not found in response: {}'.format(api_response.url))
             return None
 
-        info['url'] = url_found
-
         # Get file extension
         try:
-            info['ext'] = guess_extension(guess_type(info['url'])[0]).strip('.')
+            video_extension = guess_extension(guess_type(urlparse(video_url).path)[0])
         except (AttributeError, IndexError):
-            logging.error('Couldnt get extension from url: {}'.format(info['url']))
+            logging.error('Couldnt get extension from url: {}'.format(video_url))
             return None
 
-        # get title
-        try:
-            info['title'] = re.search(r'title=(.*?)(?:&|%)', api_response.text).group(1)
-        except:
-            logging.warn('Couldnt get title from url: {}'.format(api_response.url))
-            return None
+        info = {
+            "id": video_id,
+            "title": video_title,
+            "url": video_url,
+            "ext": video_extension,
 
+            "extractor": self.name,
+            "webpage_url": dest_url,
+        }
         return info

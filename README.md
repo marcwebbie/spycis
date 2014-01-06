@@ -107,13 +107,11 @@ http://www.vidbux.com/embed-9p3igt5r8k36.html
 ##### Obtenir les `raw urls` pour une stream url
 
 ```bash
-spycis http://www.putlocker.com/embed/A17E6D66F6D1D44B
+spycis http://www.divxstage.eu/video/46b593256e86d
 ```
 ###### Example output :
 ```bash
-http://s62.coolcdn.ch/dl/1804cb30a73b505cc424800a4f819044/52c73947/ff51f6acabea45d2ab057ed55dd.flv
-http://s63.coolcdn.ch/dl/59fb597996f8c5ba5fdc53d8/52c73795/ff51f6ad2ab057ed55dd.mp4
-http://s63.coolcdn.ch/dl/59fd797996f8c5ba5fdc53d8/52c73795/ff51f65d2ab057ed55dd.mp4
+http://s63.coolcdn.ch/dl/88fbb33139e52637640a5b282347a730/52caa6ef/ff51f6acabefb1e855a45d2ab057ed55dd.flv
 ```
 
 ### 2. Les raccourcis de recherche par code
@@ -150,21 +148,23 @@ http://s33.coolcdn.ch/dl/813c3b2938dec203a3e6769fb4f5549f/52ca4c1f/ff9ffca598779
 
 ### 3. Les racourcis de recherche par positions
 
-##### Obtenir les `stream urls` pour la position de recherche `2` avec un code de `s01e01`.
+##### Obtenir les `stream urls` pour la position de recherche `1` avec un code de `s01e16`.
 ```bash
-spycis -p 2 -s s01e01 dead
+spycis -p 1 -s s01e16 house
 ```
 ###### Example output:
 
 ```bash
-http://www.putlocker.com/embed/064AB1FB4E109807
-http://www.putlocker.com/embed/CBE069654BC5EA7E
-http://www.sockshare.com/embed/54191E3B7033E7D2
+http://www.putlocker.com/embed/4EB13DEA60C9EF28
+http://gorillavid.in/embed-kdk7i5r1p5ye-650x400.html
+http://www.sockshare.com/embed/0830C86867F3EE66
+http://gorillavid.in/embed-iabh7e6bchgq-650x400.html
+http://gorillavid.in/embed-30y7ahav048u-650x400.html
 ```
 
-##### Obtenir les `raw urls` pour la position de recherche `2` avec un code de `s01e01`.
+##### Obtenir les `raw urls` pour la position de recherche `1` avec un code de `s01e16`.
 ```bash
-spycis -p 2 -r s01e01 dead
+spycis -p 1 -r s01e16 house
 ```
 ###### Example output:
 
@@ -242,14 +242,20 @@ spycis --stream 8080 --subtitles messoustitres.srt /home/user/Videos/ma_video_lo
 
 ### 5. Avancée
 
-##### Obtenir version de spycis installée
+##### Voir la version installée de spycis
 
 ```bash
 spycis --version
 ```
 
 ###### Example output:
+```bash
+Spycis v0.0.1
 
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+```
 
 ##### Executer spycis en mode verbose avec `-v` ou `--verbose`
 
@@ -266,13 +272,6 @@ spycis --vv 'lion king'
 spycis --workers 3 'lion king'
 ```
 
-```bash
-Spycis v0.0.1
-
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-```
 
 ### Cadeau
 

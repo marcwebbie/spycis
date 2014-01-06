@@ -1,6 +1,7 @@
 import os
 from mimetypes import guess_extension, guess_type
 import requests
+from requests.exceptions import RequestException
 
 from .compat import *
 from .extractors import get_instances
