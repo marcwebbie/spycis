@@ -43,14 +43,14 @@ class LoveserieWrapper(BaseWrapper):
                 except (IndexError, AttributeError, TypeError):
                     logging.error('Couldnt build link from link_item'.format(link))
 
-        for link in links:
-            try:
-                # build stream urls out of link tuples
-                stream_url = re.search(r'(https?://.*?)&', link[1]).group(1)
-                stream_url += "?version={}".format(link[0])
-                yield stream_url
-            except AttributeError:
-                logging.error('Couldnt build stream url from link: {}'.format(link))
+            for link in links:
+                try:
+                    # build stream urls out of link tuples
+                    stream_url = re.search(r'(https?://.*?)&', link[1]).group(1)
+                    stream_url += "?version={}".format(link[0])
+                    yield stream_url
+                except AttributeError:
+                    logging.error('Couldnt build stream url from link: {}'.format(link))
 
         # return stream_urls
 
