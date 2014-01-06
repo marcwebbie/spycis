@@ -14,7 +14,7 @@ import time
 
 from spycis import extractors
 from spycis.utils import session
-from spycis.compat import *
+from spycis.compat import Queue, urlparse
 
 
 class Reporter(object):
@@ -96,7 +96,7 @@ class Downloader(object):
 
     def extract(self, stream_urls):
         if self.raw_url_info:
-            loggin.debug("Extracting raw urls with info")
+            logging.debug("Extracting raw urls with info")
         if self.workers > 0:
             return self.extract_async(stream_urls)
 
@@ -140,13 +140,16 @@ class Downloader(object):
             sys.stderr.flush()
             return None
 
-    def play(self, extension, player):
-        rgx = re.compile(extension)
+    def play(self, pattern, player):
+        pattern = re.compile(pattern)
         try:
-            info = random.choice([i for i in self.info_list if rgx.search(i['ext'])])
+            matched_infos = [i for i in self.info_list if pattern.search(i['webpage_url']) or pattern.search(i['url']) or pattern.search(i['title'])]
+            info = random.choice(matched_infos)
         except IndexError:
-            logging.warning("Video with extesion specified ({}) not found.".format(extension))
+            logging.warning("play: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
+
+        logging.debug('Chosen info to play: {}'.format(info))
 
         command = [
             player,
@@ -157,14 +160,20 @@ class Downloader(object):
             command.extend([
                 "--file-caching=1000",
             ])
+
+        print('Playing url: {}:\n'.format(info['url']))
         subprocess.call(command)
 
-    def download(self, extension):
-        rgx = re.compile(extension)
+    def download(self, pattern):
+        pattern = re.compile(pattern)
         try:
-            info = random.choice([i for i in self.info_list if rgx.search(i['ext'])])
+            matched_infos = [
+                i for i in self.info_list
+                if pattern.search(i['webpage_url']) or pattern.search(i['url']) or pattern.search(i['title'])
+            ]
+            info = random.choice(matched_infos)
         except IndexError:
-            logging.warning("Video with extesion specified ({}) not found.".format(extension))
+            logging.warning("download: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
 
         response = session.get(info['url'], stream=True)

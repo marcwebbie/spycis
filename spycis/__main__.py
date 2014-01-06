@@ -239,9 +239,9 @@ def run(args=get_args()):
 
     # Bonus options
     if args.play and downloader.info_list:
-        extension = args.play
+        pattern = args.play
         player = args.player
-        downloader.play(extension=extension, player=player)
+        downloader.play(pattern=pattern, player=player)
 
     elif args.stream and downloader.info_list:
         stream_port = args.stream
@@ -249,8 +249,8 @@ def run(args=get_args()):
         downloader.stream(stream_port=stream_port, subtitles=subtitles)
 
     elif args.download and downloader.info_list:
-        extension = args.download
-        downloader.download(extension=extension)
+        pattern = args.download
+        downloader.download(pattern=pattern)
 
 if __name__ == '__main__':
     try:

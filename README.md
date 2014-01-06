@@ -42,9 +42,9 @@ les options de Spycis sont activé par des "switches" de terminal au formats: `-
 
 ### Options bonus
 
-+ `--play`: Executer le premier fichier au format spécifié dans les `raw urls` extraites. ex: `--play mp4`
++ `--download`: Télécharge le premier fichier au pattern² dans les `raw urls` extraites. ex: `--download mp4`
++ `--play`: Executer le premier fichier au pattern² spécifié dans les `raw urls` extraites. ex: `--play mp4`
 + `--player`: Choisir le player pour l'option play ex: `--player amarok`
-+ `--download`: Télécharge le premier fichier en format dans les `raw urls` extraites. ex: `--download mp4`
 + `--subtitles`: Ouvre streaming pour les sous-titres ex: `--subtitles mes_sous_titres.srt`
 + `--stream`: Ouvre streaming sur la porte spécifié. ex: `--stream 8080`
 
@@ -56,7 +56,7 @@ les options de Spycis sont activé par des "switches" de terminal au formats: `-
 + `--version`: Voir la version de spycis. ex: `--version`
 
 > ¹ La position est imprimé au terminal dans les résultats de recherches avec les valeurs entre accolades carrés `[ ]`
-
+> ² Les patterns sont des expressions regulières, `.` veut dire tout, alors que `mp4$` veut dire que doit se terminer par `mp4` pour plus d'info lire ici: [tutoriel regex](http://lumadis.be/regex/tuto_pcre.php)
 
 ## Tutoriel
 
@@ -196,14 +196,14 @@ Les bonus ne retournent pas des urls, ils font des actions sur les urls trouvée
 spycis --play mp4 -p 30 "The Lion King" 
 ```
 
-###### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" en format mp4 sur mplayer
+###### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4 sur mplayer
 ```bash
 spycis --play mp4 --player mplayer -r s05e07 "vampire diaries" 
 ```
 
 #### Télécharger une vidéo
 
-###### Télecharge l'episode 7 de saison 5 de "Vampire Diaries" en format mp4
+###### Télecharge l'episode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4
 ```bash
 spycis --download mp4 -r s05e07 "vampire diaries" 
 ```
