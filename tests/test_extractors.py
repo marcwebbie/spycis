@@ -85,24 +85,6 @@ class ExtractorsTests(unittest.TestCase):
         self.assertIn("url", info.keys())
         self.assertIn("ext", info.keys())
 
-    def test_gorillavid(self):
-        pass
-
-    def test_novamov(self):
-        extractor = extractors.get_extractor(name="sockshare")
-        self.assertIsNotNone(extractor)
-
-        url = None
-        embed_url = "http://www.sockshare.com/embed/54191E3B7033E7D2"
-
-        info = extractor.extract(embed_url)
-        self.assertIsInstance(info, dict)
-
-        self.assertIn("id", info.keys())
-        self.assertIn("title", info.keys())
-        self.assertIn("url", info.keys())
-        self.assertIn("ext", info.keys())
-
     def test_novamov(self):
         extractor = extractors.get_extractor(name="novamov")
         self.assertIsNotNone(extractor)
@@ -117,6 +99,24 @@ class ExtractorsTests(unittest.TestCase):
         self.assertIn("title", info.keys())
         self.assertIn("url", info.keys())
         self.assertIn("ext", info.keys())
+
+    def test_sockshare(self):
+        extractor = extractors.get_extractor(name="sockshare")
+        self.assertIsNotNone(extractor)
+
+        url = None
+        embed_url = "http://www.sockshare.com/embed/54191E3B7033E7D2"
+
+        info = extractor.extract(embed_url)
+        self.assertIsInstance(info, dict)
+
+        self.assertIn("id", info.keys())
+        self.assertIn("title", info.keys())
+        self.assertIn("url", info.keys())
+        self.assertIn("ext", info.keys())
+
+    def test_gorillavid(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
