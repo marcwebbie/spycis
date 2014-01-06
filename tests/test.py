@@ -45,18 +45,22 @@ class WrappersTests(unittest.TestCase):
         self.assertTrue(isinstance(wrappers.get_instance("example"), ExampleWrapper))
 
 
+"""
+python2 -m spycis mentalist
+python2 -m spycis http://www.tubeplus.me/player/553643/The_Lion_King/
+python2 -m spycis http://www.divxstage.eu/video/46b593256e86d
+python2 -m spycis -s s02e03 "Vampire Diaries"
+python2 -m spycis -r s02e03 "Vampire Diaries"
+python2 -m spycis -p 1 -s s01e16 house
+python2 -m spycis -p 1 -s r01e16 house
+python2 -m spycis -p 30 "Lion King"
+echo "tests ok"
+"""
+
+
 class InterfaceTests(unittest.TestCase):
 
     """Test the minimal interface that spycis must have 
-
-    python2 -m spycis mentalist
-    python2 -m spycis http://www.tubeplus.me/player/553643/The_Lion_King/
-    python2 -m spycis http://www.divxstage.eu/video/46b593256e86d
-    python2 -m spycis -s s02e03 "Vampire Diaries"
-    python2 -m spycis -r s02e03 "Vampire Diaries"
-    python2 -m spycis -p 1 -s s01e16 house
-    python2 -m spycis -p 1 -s r01e16 house
-    python2 -m spycis -p 30 "Lion King"
     """
 
     def setUp(self):
