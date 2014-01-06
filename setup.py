@@ -2,15 +2,18 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-__version__ = "0.0.2-dev"
+__version__ = "0.0.3-dev"
+
+long_description = """Spycis is a python console interface to stream websites
+"""
 
 setup(
     name='spycis',
     version=__version__,
     license='MIT',
     description='Console interface to stream websites',
-    long_description=open('README.md').read(),
-    keywords='stream video movie episode tv show film player',
+    long_description="Spycis is a python console interface to stream websites",
+    keywords=long_description,
     url='https://github.com/marcwebbie/spycis',
     author='Marcwebbie',
     author_email='marcwebbie@gmail.com',

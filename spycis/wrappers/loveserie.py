@@ -40,7 +40,7 @@ class LoveserieWrapper(BaseWrapper):
                     link_version = link('td:first').text().split()[-1]
                     link_href = unquote(link('a:contains("Regarder")').attr('href'))
                     links.append((link_version, link_href,))
-                except (IndexError, AttributeError):
+                except (IndexError, AttributeError, TypeError):
                     logging.error('Couldnt build link from link_item'.format(link))
 
         for link in links:
