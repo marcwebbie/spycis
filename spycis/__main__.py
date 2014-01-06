@@ -250,7 +250,7 @@ def run(args=get_args()):
 
     elif args.download and downloader.info_list:
         extension = args.download
-        downloader.download(extension=video_format)
+        downloader.download(extension=extension)
 
 if __name__ == '__main__':
     try:

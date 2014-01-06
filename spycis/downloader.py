@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import logging
+import re
 import random
 import socket
 import subprocess
@@ -140,8 +141,9 @@ class Downloader(object):
             return None
 
     def play(self, extension, player):
+        rgx = re.compile(extension)
         try:
-            info = random.choice([i for i in self.info_list if extension in i['ext']])
+            info = random.choice([i for i in self.info_list if rgx.search(i['ext'])])
         except IndexError:
             logging.warning("Video with extesion specified ({}) not found.".format(extension))
             return None
@@ -158,8 +160,9 @@ class Downloader(object):
         subprocess.call(command)
 
     def download(self, extension):
+        rgx = re.compile(extension)
         try:
-            info = random.choice([i for i in self.info_list if extension in i['ext']])
+            info = random.choice([i for i in self.info_list if rgx.search(i['ext'])])
         except IndexError:
             logging.warning("Video with extesion specified ({}) not found.".format(extension))
             return None
