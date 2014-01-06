@@ -73,9 +73,6 @@ class NovamovExtractor(BaseExtractor):
         except (AttributeError, AssertionError):
             logging.error("Couldn't extract raw url or title from api response: {}".format(api_response))
 
-        import pdb
-        pdb.set_trace()
-
         try:
             video_extension = guess_extension(guess_type(urlparse(video_url).path)[0])
         except:
