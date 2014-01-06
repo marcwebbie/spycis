@@ -4,6 +4,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from spycis import wrappers
+from spycis.wrappers.common import Media
 
 
 class TubeplusTests(unittest.TestCase):
@@ -49,6 +50,33 @@ class TubeplusTests(unittest.TestCase):
 
         for url in urls:
             self.assertTrue(url.startswith('http://'))
+
+
+class LoveSerieTests(unittest.TestCase):
+
+    def test_loveserie_wrapper_exists(self):
+        from spycis.wrappers.common import BaseWrapper
+        site = wrappers.get_instance("loveserie")
+        self.assertIsInstance(site, BaseWrapper)
+
+    def test_loveserie_search_return_expected_dict(self):
+        site = wrappers.get_instance("loveserie")
+        search_results = site.search("dead")
+
+        self.assertIsInstance(search_results, list)
+        self.assertGreater(len(search_results), 0)
+
+        for result in search_results:
+            self.assertIsInstance(result, Media)
+
+        # self.assertIn(expected_dict, search_results)
+
+    def test_loveserie_get_stream_urls_from_media_page(self):
+        media_url = "http://www.loveserie.com/streaming-6104"
+        site = wrappers.get_instance("loveserie")
+        stream_urls = site.get_urls(url=media_url, code="s03e10")
+
+        self.assertIsInstance(stream_urls, list)
 
 if __name__ == "__main__":
     unittest.main()
