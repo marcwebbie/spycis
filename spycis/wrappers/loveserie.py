@@ -1,5 +1,6 @@
 import logging
 import re
+import sys
 from pyquery import PyQuery
 
 from spycis.utils import session, RequestException
@@ -18,20 +19,22 @@ class LoveserieWrapper(BaseWrapper):
             response = session.get(url, timeout=3)
         except RequestException as e:
             logging.error("{}".format(e))
-            raise StopIteration()
-            # return None
+            # raise StopIteration()
+            return []
 
         try:
             season, episode = self._parse_episode_code(code)
         except ValueError:
-            logging.warning("Malformed code not in format s[SS]e[EE]".format(code))
-            raise StopIteration()
-            # return None
+            sys.stderr.write("ERROR: Malformed code not in format s[SS]e[EE]\n".format(code))
+            sys.stderr.flush()
+            # raise StopIteration()
+            return []
 
         season_id = "#season{}".format(season)
         episode_title = "Episode {}".format(episode)
         pq = PyQuery(response.content)
 
+        stream_urls = []
         for eitem in pq(season_id)('.episodeitem').items():
             episode_name = eitem('.episodetitle').text()
             links = []
@@ -48,11 +51,12 @@ class LoveserieWrapper(BaseWrapper):
                     # build stream urls out of link tuples
                     stream_url = re.search(r'(https?://.*?)&', link[1]).group(1)
                     stream_url += "?version={}".format(link[0])
-                    yield stream_url
+                    # yield stream_url
+                    stream_urls.append(stream_url)
                 except AttributeError:
                     logging.error('Couldnt build stream url from link: {}'.format(link))
 
-        # return stream_urls
+        return stream_urls
 
     def search(self, query):
         search_url = "http://www.loveserie.com/streaming/serie"

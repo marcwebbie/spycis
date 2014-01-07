@@ -176,13 +176,13 @@ def run(args=get_args()):
         medias = site.search(query)
 
         try:
-            url = medias[args.position].url
+            media_url = medias[args.position].url
         except IndexError:
             logging.error("Not a valid position")
             return None
 
         code = args.stream_urls
-        stream_urls = site.get_urls(url, code=code)
+        stream_urls = site.get_urls(media_url, code=code)
 
         for stream_url in stream_urls:
             print(stream_url)

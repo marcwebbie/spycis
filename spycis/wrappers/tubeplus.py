@@ -1,5 +1,6 @@
 import logging
 import re
+import sys
 from pyquery import PyQuery
 
 from spycis.utils import session
@@ -53,7 +54,8 @@ class TubeplusWrapper(BaseWrapper):
                 season = season.strip('0')
                 episode = episode.strip('0')
             except AttributeError:
-                logging.warning("Malformed code not in format s[SS]e[EE]".format(code))
+                sys.stderr.write("ERROR: Malformed code not in format s[SS]e[EE]\n".format(code))
+                sys.stderr.flush()
                 raise StopIteration()
 
             season_links_text = ' '.join(pq(a).attr('href') for a in pq('.season'))
@@ -62,7 +64,9 @@ class TubeplusWrapper(BaseWrapper):
             try:
                 episode_id = rgx.search(season_links_text).group(1)
             except AttributeError:
-                logging.debug("Could't find episode with this code: {}".format(code))
+                sys.stderr.write("Could't find episode with code: {}. "
+                                 "Use `-s .` to list all available episodes\n".format(code))
+                sys.stderr.flush()
                 raise StopIteration()
 
             episode_url = self.site_url + '/player/{}/'.format(episode_id)
