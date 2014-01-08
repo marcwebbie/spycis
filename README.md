@@ -20,7 +20,7 @@ pip install -U https://bitbucket.org/marcwebbie/spycis/get/master.zip
 ### Désinstaller
 
 ```python
-pip uninstall https://bitbucket.org/marcwebbie/spycis/get/master.zip
+pip uninstall spycis
 ```
 
 ## Options de ligne de commande de spycis
@@ -60,8 +60,8 @@ Le tutoriel est divisé en parties:
 1. Les recherches basiques par urls.
 2. Les raccourcis de recherche par codes.
 3. Les raccourcis de recherche par positions. (_idéal pour les films, ou les ambiguitées_)
-4. Les bonus.
-5. Les avancées.
+4. Les options bonus.
+5. Les options avancées.
 
 ### 1. Les recherches basiques par urls
 
@@ -190,7 +190,7 @@ http://s93.coolcdn.ch/dl/460eaf292dde58e88cc20dd85e3089b0/52ca4d78/ff8f8516069d4
 http://s63.coolcdn.ch/dl/aee95feb62c17d6e52ba373b692e7bb8/52ca4bd3/ff7a1a561530c5f727d23577fcd250828e.flv
 ```
 
-### 4. Les bonus
+### 4. Les options bonus
 
 Les bonus ne retournent pas des urls, ils font des actions sur les `raw urls` trouvées. Les options des bonus sont toujours utilisées avec ses noms longs pour ne pas confondre avec les options basiques.
 
@@ -307,7 +307,7 @@ spycis --stream . --stream-port 9000 -p 30 "lion king"
 
 ###### Exemple output:
 
-```
+```bash
 http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld7dspz4u/video.flv
 http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivhj2d7mi/video.flv
 Glissez les sous-titres pour 'zpkcdcd8e0hs.flv' ici : 
@@ -317,12 +317,21 @@ VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 [0x937938] dummy interface: using the dummy interface module...
 ```
 
-### 5. Avancée
+### 5. Les options avancées
 
 ###### Lister les sites disponibles
 
 ```bash
 spycis --site-list all
+```
+
+###### Exemple output:
+
+```bash
+List of available sites: 
+  loveserie
+  example
+  tubeplus
 ```
 
 ###### Faire recherche sur un site alternatif
