@@ -51,12 +51,13 @@ les options de Spycis sont activé par des "switches" de terminal au formats: `-
 
 ### Options avancées
 
-+ `-v`, `-vv` ou `--verbose`: Activer le mode débogage. ex: `--verbose`, pour plus de debogage `-vv`: 
++ `-v`, `-vv` ou `--verbose`: Activer le mode débogage. ex: -v, `--verbose`, pour plus de debogage `-vv`: 
 + `--workers`: Nombre des threads pour l'extraction des urls ex: `--workers 20`
 + `--site`: Changer le site de recherche. ex: `--site sitename`
 + `--version`: Voir la version de spycis. ex: `--version`
 
 > ¹ La position est imprimé au terminal dans les résultats de recherches avec les valeurs entre accolades carrés `[ ]`
+
 > ² Les patterns sont des expressions regulières, `.` veut dire tout, alors que `mp4$` veut dire que doit se terminer par `mp4` pour plus d'info lire ici: [tutoriel regex](http://lumadis.be/regex/tuto_pcre.php)
 
 ## Tutoriel
@@ -84,7 +85,6 @@ spycis "mentalist"
 [1] 'The Mentalist' ['film'] (http://www.tubeplus.me/player/2086823/The_Mentalist/)
 [2] 'The Mentalist' ['tv-show'] (http://www.tubeplus.me/player/1444106/The_Mentalist/)
 ```
- 
 
 ##### Obtenir les `stream urls` pour une `media url`. Attention ça marche que pour les films. Pour les séries au moins un code episode doit être informé au format: _s01e01_
 
@@ -110,7 +110,9 @@ http://www.vidbux.com/embed-9p3igt5r8k36.html
 ```bash
 spycis http://www.divxstage.eu/video/46b593256e86d
 ```
+
 ###### Exemple output :
+
 ```bash
 http://s63.coolcdn.ch/dl/88fbb33139e52637640a5b282347a730/52caa6ef/ff51f6acabefb1e855a45d2ab057ed55dd.flv
 ```
@@ -119,10 +121,12 @@ http://s63.coolcdn.ch/dl/88fbb33139e52637640a5b282347a730/52caa6ef/ff51f6acabefb
 
 Les raccourcis de recherche par code sans l'option position va toujours prendre le première position dans les recherches
 
-##### Obtenir les `stream urls` pour la position par defaul(`0`) dans la recherche avec le code épisode 
+##### Obtenir les `stream urls` pour la position par defaul(`0`) dans la recherche avec le code épisode `s02e03` 
+
 ```bash
 spycis -s s02e03 "Vampire Diaries"
 ```
+
 ###### Exemple output:
 ```bash
 http://www.divxstage.eu/video/46b593256e86d
@@ -133,9 +137,11 @@ http://embed.nowvideo.sx/embed.php?v=09cc4321affc8
 ```
 
 ##### Obtenir les `raw urls` pour la position par defaul(`0`) dans la recherche avec le code épisode `s02e03`
+
 ```bash
 spycis -r s02e03 "Vampire Diaries"
 ```
+
 ###### Exemple output:
 ```bash
 http://50.7.161.75:182/d/z5sj6h3iljrwuxim4y6sl4qu6gqlucqvfdxuelpkzxvacn37sxj6oc74/video.mp4
@@ -149,10 +155,12 @@ http://s33.coolcdn.ch/dl/813c3b2938dec203a3e6769fb4f5549f/52ca4c1f/ff9ffca598779
 
 ### 3. Les racourcis de recherche par positions
 
-##### Obtenir les `stream urls` pour la position de recherche `1` avec un code de `s01e16`.
+##### Obtenir les `stream urls` pour la position de recherche `1` avec le code épisode `s01e16`.
+
 ```bash
 spycis -p 1 -s s01e16 house
 ```
+
 ###### Exemple output:
 
 ```bash
@@ -163,7 +171,8 @@ http://gorillavid.in/embed-iabh7e6bchgq-650x400.html
 http://gorillavid.in/embed-30y7ahav048u-650x400.html
 ```
 
-##### Obtenir les `raw urls` pour la position de recherche `1` avec un code de `s01e16`.
+##### Obtenir les `raw urls` pour la position de recherche `1` avec le code épisode `s01e16`.
+
 ```bash
 spycis -p 1 -r s01e16 house
 ```
@@ -175,10 +184,12 @@ http://s32.coolcdn.ch/dl/dd361f0f4d8e911f31cb8c7f569828a5/52ca4a40/ff9ffca598779
 http://s82.coolcdn.ch/dl/f46549bc003bd0e5d04e3159ca264c6b/52ca4a40/ffec6671b8c36f0348ae0ef4e119f49d64.flv
 ```
 
-##### Obtenir les `raw urls` pour la position de recherche `30`. Attention ça marche que pour les film, pour les series au moins un code episode doit être informé au format:`-p 30 -r s01e01`
+##### Obtenir les `raw urls` pour la position de recherche `30`. Attention ça marche que pour les film, pour les le code épisode doit être informé avec l'option --raw-url. ex: `-p 30 -r s01e01`
+
 ```bash
 spycis -p 30 "Lion King"
 ```
+
 ###### Exemple output:
 
 ```bash
@@ -188,56 +199,122 @@ http://s63.coolcdn.ch/dl/aee95feb62c17d6e52ba373b692e7bb8/52ca4bd3/ff7a1a561530c
 
 ### 4. Les bonus
 
-Les bonus ne retournent pas des urls, ils font des actions sur les urls trouvées. les options des bonus sont toujours utilisées avec ses noms longs pour ne pas confondre avec les options basiques
+Les bonus ne retournent pas des urls, ils font des actions sur les `raw urls` trouvées. Les options des bonus sont toujours utilisées avec ses noms longs pour ne pas confondre avec les options basiques.
 
-#### Regarder une vidéo extrait
+#### Option `--play`: Regarder une vidéo
 
-###### Regarder la vidéo que a le pattern flv sur vlc
+###### Regarder "Le Roi Lion" avec pattern `flv` sur vlc
+
 ```bash
 spycis --play flv -p 30 "The Lion King" 
 ```
 
 ###### Example output:
 ```bash
-$ spycis --play mp4 -p 30 "The Lion King" 
-http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld2hsxz4u/video.flv
-http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivcn237mi/video.flv
-(acmedia_env)[marc@arch spycis]$ python -m spycis --play flv -p 30 "The Lion King" 
 http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivff237mi/video.flv
 http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld5psxz4u/video.flv
  * Playing url: http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivff237mi/video.flv
 VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 [0x2273048] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
-
 ```
 
 ###### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4 sur mplayer
+
 ```bash
 spycis --play mp4 --player mplayer -r s05e07 "vampire diaries" 
 ```
 
-#### Télécharger une vidéo
+#### Option `--download`: Télécharger une vidéo
 
 ###### Télecharge l'episode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4
+
 ```bash
 spycis --download mp4 -r s05e07 "vampire diaries" 
 ```
 
-#### Streaming d'une video
+#### Option `--stream`: Streaming d'une video
 
 ###### Faire streaming du film 'Roi Lion'
+
 ```bash
 spycis --stream . -p 30 "lion king" 
 ```
 
+###### Faire streaming de l'episode 7 de saison 5 de "Vampire Diaries"
+
+```bash
+spycis --stream . -r s05e07 "vampire diaries" 
+```
+
+###### Fait du streaming d'une `raw url`
+
+```bash
+spycis --stream . http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
+```
+
+###### Fait du streaming d'une `stream url`
+
+```bash
+spycis --stream . http://embed.nowvideo.sx/embed.php?v=5fd0e2c91f94f
+```
+
+###### Exemple output:
+
+```bash
+http://s32.coolcdn.ch/dl/e4ed66cb4caee3a4d66a46e524d9c133/52cdcc05/ff9ffca598779e196b4e5190f74f554189.flv
+Glissez les sous-titres pour 'the.vampire.diaries.s02e03.dvdrip.xvidreward' ici : 
+ * Chosen file: http://s32.coolcdn.ch/dl/e4ed66cb4caee3a4d66a46e524d9c133/52cdcc05/ff9ffca598779e196b4e5190f74f554189.flv
+ * Streaming from: 192.168.25.8:8080
+VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
+[0x10ab9a8] dummy interface: using the dummy interface module...
+```
+
+###### Utiliser pattern pour stream de la version francaise de under the dome s01e01 sur le site `loveserie`
+
+```bash
+spycis --site loveserie --stream FRENCH -r s01e01 "under the dome"
+```
+
+###### Exemple output:
+
+```bash
+# le pattern choisi le fichier que a le mot 'FRENCH'
+http://fs2.youwatch.org:8777/ytv7tqhdekoax3ptx2bindnq66k2ymiojy67sa4je2zd7y3gi7nxelb2ai/video.mp4
+http://fs15.youwatch.org:8777/exv75i7dh6oax3ptx25ynrp5uq77jyflkxa5n5qs3imzxtasd2mn4szdua/video.mp4
+Glissez les sous-titres pour 'Download.Under.The.Dome.S01E01.FRENCH.BDRip.XviD.MiND.avi' ici :
+```
+
+#### Option `--subtitles`: Streaming d'une video avec sous-titres
+
+###### Fait du streaming de l'episode 7 de saison 5 de "Vampire Diaries" avec sous-titres
+
+```bash
+spycis --stream . --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries" 
+```
+
+###### Fait du streaming d'une raw url avec sous-titres
+
+```bash
+spycis --stream . --subtitles vampire_soustitres.srt http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
+```
+
+###### Fait du streaming d'un fichier local avec sous-titres
+
+```bash
+spycis --stream . --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
+```
+
+#### Option `--stream-port`: Streaming d'une video sur une port specifié
+
 ###### Faire streaming du film 'Roi Lion' sur la porte `9000`. __note__: La porte par default c'est la 8080
+
 ```bash
 spycis --stream . --stream-port 9000 -p 30 "lion king" 
 ```
 
 ###### Exemple output:
+
 ```
-$ spycis --stream . --stream-port 9000 -p 30 "lion king"
 http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld7dspz4u/video.flv
 http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivhj2d7mi/video.flv
 Glissez les sous-titres pour 'zpkcdcd8e0hs.flv' ici : 
@@ -246,46 +323,6 @@ Glissez les sous-titres pour 'zpkcdcd8e0hs.flv' ici :
 VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 [0x937938] dummy interface: using the dummy interface module...
 ```
-
-###### Faire streaming de l'episode 7 de saison 5 de "Vampire Diaries"
-```bash
-spycis --stream . -r s05e07 "vampire diaries" 
-```
-
-###### Fait du streaming de l'episode 7 de saison 5 de "Vampire Diaries" avec sous-titres
-```bash
-spycis --stream . --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries" 
-```
-
-###### Fait du streaming d'une `raw url`
-```bash
-spycis --stream . http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
-```
-
-###### Fait du streaming d'une raw url avec sous-titres
-```bash
-spycis --stream . --subtitles vampire_soustitres.srt http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
-```
-
-###### Fait du streaming d'un fichier local avec sous-titres
-```bash
-spycis --stream . --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
-```
-
-###### Utiliser pattern pour stream de la version francaise de under the dome s01e01 sur le site `loveserie`
-```bash
-spycis --site loveserie --stream FRENCH -r s01e01 "under the dome"
-```
-
-###### Exemple output:
-```bash
-# le pattern choisi le fichier que a le mot 'FRENCH'
-$ spycis --site loveserie --stream . -r s01e01 "under the dome"
-http://fs2.youwatch.org:8777/ytv7tqhdekoax3ptx2bindnq66k2ymiojy67sa4je2zd7y3gi7nxelb2ai/video.mp4
-http://fs15.youwatch.org:8777/exv75i7dh6oax3ptx25ynrp5uq77jyflkxa5n5qs3imzxtasd2mn4szdua/video.mp4
-Glissez les sous-titres pour 'Download.Under.The.Dome.S01E01.FRENCH.BDRip.XviD.MiND.avi' ici :
-```
-
 
 ### 5. Avancée
 
@@ -306,21 +343,9 @@ spycis --site loveserie -s s01e08 deadwood
 
 ```bash
 # Sur le site loveserie, les urls se terminent par version, VO, VF ou VOST
-http://youwatch.org/yo6zw5x7mm3j?version=VOST
-http://youwatch.org/xlj7ydr2qvgv?version=VF
-http://www.duckstreaming.com/bd9pa3qyxtuf?version=VF
-```
-
-
-###### Obtenir les raw urls pour la version VF de la dernière recherche
-
-```bash
-spycis http://youwatch.org/xlj7ydr2qvgv?version=VF
-```
-###### Example output:
-
-```bash
-http://fs9.youwatch.org:8777/qpv7qhlbewoax3ptxyqintpev7cqy5r3ucn2tbgfungna5sqvl3jwh4jpy/video.mp4
+http://youwatch.org/l0lqxt7w5t25
+http://youwatch.org/cd49rhqmpbps
+http://www.duckstreaming.com/lm0fhyxsrhxj
 ```
 
 ###### Voir la version de spycis installé
@@ -328,21 +353,22 @@ http://fs9.youwatch.org:8777/qpv7qhlbewoax3ptxyqintpev7cqy5r3ucn2tbgfungna5sqvl3
 ```bash
 spycis --version
 ```
+
 ###### Exemple output:
+
 ```bash
 Spycis v0.0.1
-
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
 ```
 
-##### Executer spycis en mode verbose avec `-v` ou `--verbose`
+##### Executer spycis en mode verbose avec `-v` ou `--verbose`. Plus 
 
 ```bash
-spycis --verbose 'lion king'
+spycis -vv 'lion king'
+```
 
-# Pour avoir plus d'information de debogage
+##### Executer spycis en mode verbose avec information de debogage plus approfondie avec `-vv`
+
+```bash
 spycis -vv 'lion king'
 ```
 
