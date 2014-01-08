@@ -1,4 +1,8 @@
 import re
+from collections import namedtuple
+
+Stream = namedtuple("Stream", "url language subtitles hd")
+Episode = namedtuple("Episode", "season episode title url air_date")
 
 
 class Media(object):
@@ -39,7 +43,7 @@ class BaseWrapper(object):
             season = int(season.strip('0'))
             episode = int(episode.strip('0'))
         except AttributeError:
-            raise ValueError("Not a valid code")
+            raise ValueError("ERROR: Malformed code not in format s[SS]e[EE]\n")
         return season, episode
 
     @property
@@ -50,7 +54,7 @@ class BaseWrapper(object):
     def is_valid_url(self, url):
         return self.url_regex.match(url)
 
-    def get_urls(self, url, code=None):
+    def get_streams(self, url, code=None):
         """Return generator for player pages
         If code is specified fetch urls from page that match code,
         """

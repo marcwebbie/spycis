@@ -1,3 +1,4 @@
+from functools import partial
 import os
 import re
 from mimetypes import guess_extension, guess_type
@@ -7,13 +8,15 @@ from requests.exceptions import RequestException
 from .compat import *
 from .extractors import get_instances
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1674.0 Safari/537.36"
-}
+
 session = requests.Session()
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0"}
 session.headers.update(headers)
 http_adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
 session.mount('http://', http_adapter)
+# patch session to use timeout
+session.get = partial(session.get, timeout=3)
+session.post = partial(session.post, timeout=3)
 
 
 def baseconv(number, base=10):
@@ -78,3 +81,9 @@ def is_local_file(path):
     filepath = os.path.abspath(os.path.join(parsed.netloc, parsed.path))
 
     return os.path.isfile(filepath)
+
+
+def print_error(message, flush=True):
+    sys.stderr.write("{}\n".format(message))
+    if flush:
+        sys.stderr.flush()

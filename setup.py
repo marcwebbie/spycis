@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-__version__ = "0.0.3-dev"
+__version__ = "0.0.1-dev2"
 
 long_description = """Spycis is a python console interface to stream websites
 """

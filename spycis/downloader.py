@@ -133,7 +133,8 @@ class Downloader(object):
             ]
 
             addr = socket.gethostbyname(socket.gethostname())
-            print(' * Streaming from: {}:{}\n'.format(addr, stream_port))
+            print(' * Chosen file: {}'.format(info['url']))
+            print(' * Streaming from: {}:{}'.format(addr, stream_port))
             return subprocess.call(cmd)
         else:
             sys.stderr.write("Couldn't find a match url for the stream\n")
@@ -143,7 +144,11 @@ class Downloader(object):
     def play(self, pattern, player):
         pattern = re.compile(pattern)
         try:
-            matched_infos = [i for i in self.info_list if pattern.search(i['webpage_url']) or pattern.search(i['url']) or pattern.search(i['title'])]
+            matched_infos = [
+                i for i in self.info_list
+                if pattern.search(i['webpage_url']) or
+                pattern.search(i['url']) or
+                pattern.search(i['title'])]
             info = random.choice(matched_infos)
         except IndexError:
             logging.warning("play: No raw url matched pattern: '{}'".format(pattern.pattern))
@@ -161,7 +166,9 @@ class Downloader(object):
                 "--file-caching=1000",
             ])
 
-        print('Playing url: {}:\n'.format(info['url']))
+        print(' * Playing url: {} ()'.format(
+            info['url'], info['webpage_url'])
+        )
         subprocess.call(command)
 
     def download(self, pattern):

@@ -1,55 +1,38 @@
 import os
 import sys
 import unittest
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(
+    0,
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from spycis import wrappers
-from spycis.wrappers.common import Media
+from spycis.wrappers.common import BaseWrapper, Media, Stream
 
 
 class TubeplusTests(unittest.TestCase):
 
     def test_tubepluswrapper_exists(self):
-        from spycis.wrappers.common import BaseWrapper
         site = wrappers.get_instance("tubeplus")
         self.assertIsInstance(site, BaseWrapper)
 
     def test_tubeplus_search_return_expected_dict(self):
         site = wrappers.get_instance("tubeplus")
-        search_results = site.search("The Animal Kingdom")
+        medias = site.search("The Animal Kingdom")
 
-        self.assertIsInstance(search_results, list)
-        self.assertGreater(len(search_results), 0)
-        for result in search_results:
-            self.assertIsInstance(result, dict)
-        for result in search_results:
-            self.assertIsNotNone(result.get('title'))
-            self.assertIsNotNone(result.get('url'))
-            self.assertIsNotNone(result.get('description'))
-            self.assertIsNotNone(result.get('thumbnail'))
-            self.assertIsNotNone(result.get('tags'))
-            self.assertIsNotNone(result.get('year'))
-            self.assertIsNotNone(result.get('rating'))
+        self.assertIsInstance(medias, list)
+        self.assertGreater(len(medias), 0)
 
-        expected_dict = {
-            'title': 'The Animal Kingdom',
-            'description': 'The Animal Kingdom Tom Collier has had a great relationship with Daisy, but when he decides to marry, it is not Daisy whom he asks, it is Cecelia. After the marriage, Tom is bored with the social scene and the obligatio...',
-            'year': '1932',
-            'url': 'http://www.tubeplus.me/player/523193/The_Animal_Kingdom/',
-            'rating': 0.65,
-            'tags': ['film'],
-            'thumbnail': 'http://www.tubeplus.me/resources/thumbs/523193.jpg'
-        }
+        self.assertTrue(all(isinstance(m, Media) for m in medias))
 
-        self.assertIn(expected_dict, search_results)
-
-    def test_tubeplus_get_urls_return_valid_urls(self):
-        url = "http://www.tubeplus.me/player/40142/Animal_Kingdom/"
+    def test_tubeplus_get_stream_urls_from_media_page_returns_valid_streams(self):
+        media_url = "http://www.tubeplus.me/player/2132628/"
         site = wrappers.get_instance("tubeplus")
-        urls = site.get_urls(url)
+        streams = list(site.get_streams(media_url=media_url, code="s01e02"))
 
-        for url in urls:
-            self.assertTrue(url.startswith('http://'))
+        self.assertGreater(len(streams), 0)
+
+        self.assertTrue(
+            all(True if isinstance(s, Stream) else False for s in streams))
 
 
 class LoveSerieTests(unittest.TestCase):
@@ -59,24 +42,43 @@ class LoveSerieTests(unittest.TestCase):
         site = wrappers.get_instance("loveserie")
         self.assertIsInstance(site, BaseWrapper)
 
-    def test_loveserie_search_return_expected_dict(self):
+    def test_loveserie_search_return_valid_medias(self):
         site = wrappers.get_instance("loveserie")
-        search_results = site.search("dead")
+        medias = site.search("wood")
 
-        self.assertIsInstance(search_results, list)
-        self.assertGreater(len(search_results), 0)
+        self.assertIsInstance(medias, list)
+        self.assertGreater(len(medias), 0)
 
-        for result in search_results:
-            self.assertIsInstance(result, Media)
+        for media in medias:
+            self.assertIsInstance(media, Media)
 
-        # self.assertIn(expected_dict, search_results)
+        titles = ('Deadwood', 'Torchwood', 'Hollywood Girls',
+                  'Les Chtis a Hollywood (saison 5)', 'Ravenswood')
+        self.assertTrue(
+            all(True if m.title in titles else False for m in medias))
 
-    def test_loveserie_get_stream_urls_from_media_page(self):
-        media_url = "http://www.loveserie.com/streaming-6104"
+    def test_loveserie_get_stream_urls_from_media_url_returns_valid_streams(self):
+        # media_url = "http://www.loveserie.com/streaming-6104"
+        media_url = "http://www.loveserie.com/streaming-9317"
         site = wrappers.get_instance("loveserie")
-        stream_urls = site.get_urls(url=media_url, code="s03e10")
+        streams = list(site.get_streams(media_url=media_url, code="s01e02"))
 
-        self.assertIsInstance(stream_urls, list)
+        self.assertGreater(len(streams), 0)
+        self.assertTrue(
+            all(True if isinstance(s, Stream) else False for s in streams))
+
+        first_stream = streams[0]
+
+        expected_stream = Stream(
+            url='http://youwatch.org/yso5atvraz7e',
+            language='French',
+            subtitles=[],
+            hd=False,)
+        self.assertEqual(first_stream.url, expected_stream.url)
+        self.assertEqual(first_stream.language, expected_stream.language)
+        self.assertEqual(first_stream.subtitles, expected_stream.subtitles)
+        self.assertEqual(first_stream.hd, expected_stream.hd)
+
 
 if __name__ == "__main__":
     unittest.main()
