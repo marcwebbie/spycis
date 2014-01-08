@@ -14,52 +14,6 @@ class LoveserieWrapper(BaseWrapper):
         self.site_url = "http://www.loveserie.com/"
         self.url_regex = re.compile(r"http://www.loveserie.com/streaming")
 
-    '''
-    def get_streams_backup(self, media_url, code=None):
-        """Return generator with stream objects found for media_url
-        """
-
-        if not self.is_valid_url(media_url):
-            raise ValueError("Not a valid url for this site")
-
-        try:
-            response = session.get(media_url, timeout=3)
-        except RequestException as e:
-            logging.error("{}".format(e))
-            # raise StopIteration()
-            return []
-
-        season, episode = self._parse_episode_code(code)
-
-        season_id = "#season{}".format(season)
-        episode_title = "Episode {}".format(episode)
-        pq = PyQuery(response.content)
-
-        stream_urls = []
-        for eitem in pq(season_id)('.episodeitem').items():
-            episode_name = eitem('.episodetitle').text()
-            links = []
-            for link in eitem('.linkitem').items():
-                try:
-                    link_version = link('td:first').text().split()[-1]
-                    link_href = unquote(link('a:contains("Regarder")').attr('href'))
-                    links.append((link_version, link_href,))
-                except (IndexError, AttributeError, TypeError):
-                    logging.error('Couldnt build link from link_item'.format(link))
-
-            for link in links:
-                try:
-                    # build stream urls out of link tuples
-                    stream_url = re.search(r'(https?://.*?)&', link[1]).group(1)
-                    stream_url += "?version={}".format(link[0])
-                    # yield stream_url
-                    stream_urls.append(stream_url)
-                except AttributeError:
-                    logging.error('Couldnt build stream url from link: {}'.format(link))
-
-        return stream_urls
-    '''
-
     @staticmethod
     def _parse_version(vcode):
         """
@@ -74,51 +28,6 @@ class LoveserieWrapper(BaseWrapper):
             return VersionCode(language="French", subtitles=[])
         elif vcode.startswith('VOST'):
             return VersionCode(language="English", subtitles=["French"])
-
-    '''
-    def get_all_streams(self, media_url):
-        if not self.is_valid_url(media_url):
-            raise ValueError("Not a valid url for this site")
-        try:
-            res = session.get(media_url)
-        except RequestException as e:
-            logging.error("{}:error on request".format(e.__name__))
-            raise StopIteration()
-
-        pq = PyQuery(res.text)
-
-        # transverse all seasons
-        season_divs = list(pq(".seasonheader + div").items())
-
-        for season_num, sdiv in enumerate(reversed(season_divs), start=1):
-            episode_divs = sdiv('.episodeitem').items()
-
-            for episode_num, epdiv in enumerate(episode_divs, start=1):
-                title = epdiv('.episodetitle').text().strip()
-                version = epdiv('td:first').text().split()[-1]
-                language, subtitles = self._parse_version(version)
-
-                links = epdiv('.watchbutton a:contains("Regarder")').items()
-
-                for href in [a.attr('href') for a in links]:
-                    try:
-                        mobj = re.search(r'(https?://.*?)&', unquote(href))
-                        url = mobj.group(1)
-                    except (AttributeError, TypeError):
-                        logging.error("Couldn't build stream url")
-                    else:
-                        stream = Stream(
-                            url=url,
-                            title=title,
-                            season=season_num,
-                            episode=episode_num,
-                            language=language,
-                            subtitles=subtitles,
-                            air_date="Inconnu",
-                            hd=False,)
-
-                        yield stream
-    '''
 
     def get_available_episodes(self, media_url):
         if not self.is_valid_url(media_url):
@@ -212,7 +121,7 @@ class LoveserieWrapper(BaseWrapper):
             category = Media.TVSHOW
 
             media = Media(title, url, wrapper, category)
-            # --------------
+
             media.tags = result('.fi_block li:first').text().split()
             media.description = result('.fi_block li:last').text()
             media.thumbnail = result('a img[src]').attr('src')
