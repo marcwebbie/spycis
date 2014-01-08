@@ -35,7 +35,7 @@ from spycis.utils import (
 )
 
 
-__version__ = "0.0.1-dev3"
+__version__ = "0.0.1-dev4"
 
 
 def get_logger():
@@ -101,6 +101,9 @@ def get_args():
     aparser.add_argument("--stream",
                          help="Ouvre streaming sur la porte specifié. "
                          "ex: `--stream 8080`")
+    aparser.add_argument("--stream-port", default=8080, type=int,
+                         help="Choisir le player pour l'option play "
+                         "ex: `--player amarok`")
     aparser.add_argument("--subtitles",
                          help="Ouvre streaming pour les soustitres "
                          "ex: `--subtitles mes_sous_titres.srt`")
@@ -268,9 +271,12 @@ def run(args=get_args()):
 
     elif args.stream:
         if downloader.info_list:
-            stream_port = args.stream
+            pattern = args.stream
+            stream_port = args.stream_port
             subtitles = args.subtitles
-            downloader.stream(stream_port=stream_port, subtitles=subtitles)
+            downloader.stream(pattern=pattern,
+                              stream_port=stream_port,
+                              subtitles=subtitles)
         else:
             logging.warning(
                 'No raw urls were found to proceed with streaming'
@@ -279,7 +285,7 @@ def run(args=get_args()):
     elif args.download:
         if downloader.info_list:
             pattern = args.download
-            downloader.download(pattern=pattern)
+            downloader.download(pattern=pattern,)
         else:
             logging.warning(
                 'No raw urls were found to proceed with download'

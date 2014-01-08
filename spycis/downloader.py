@@ -108,38 +108,43 @@ class Downloader(object):
                     print(info if self.print_as_info else info['url'])
                     self.info_list.append(info)
 
-    def stream(self, stream_port, subtitles):
+    def stream(self, pattern, stream_port, subtitles):
+        pattern = re.compile(pattern)
         try:
-            info = random.choice(self.info_list)
+            matched_infos = [
+                i for i in self.info_list
+                if pattern.search(i['webpage_url']) or
+                pattern.search(i['url']) or
+                pattern.search(i['title'])
+            ]
+            info = random.choice(matched_infos)
         except IndexError:
-            logging.error("No raw url was found to stream.")
+            logging.warning("streaming: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
-
-        if info:
+        else:
             video_path = info['url']
-            subtitle_path = subtitles
-            if not subtitle_path:
-                subtitle_path = input("Glissez les sous-titres pour {!r} ici : ".format(info['title'])).strip().strip('"\'')
-                subtitle_path = urlparse(subtitle_path).path
-                subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
+            subs_path = subtitles
+            if not subs_path:
+                prompt = "Glissez les sous-titres pour {!r} ici : ".format(
+                    info['title'])
+                subs_path = input(prompt).strip().strip('"\'')
+                subs_path = urlparse(subs_path).path
+                subs_path = (subs_path if subs_path else
+                             NamedTemporaryFile('w', delete=False).name)
 
             command = [
                 "cvlc",
                 "{}".format(video_path),
-                "--sub-file={}".format(subtitle_path),
+                "--sub-file={}".format(subs_path),
                 "--file-caching=3000",
-                # "--sout=#transcode{vcodec=h264,venc=x264{profile=baseline,level=30,keyint=30,ref=3},acodec=mp3,ab=96,scodec=dvbs,soverlay,threads=4}:http{mux=ts,dst=:%s/}" % stream_port
-                "--sout=#transcode{venc=x264{level=30,keyint=15,bframes=0,ref=1,nocabac},width=640,vcodec=x264,vb=400,acodec=mpga,ab=96,channels=2,samplerate=44100,scodec=dvbs,soverlay,threads==4}:http{mux=ts,dst=:%s/}" % stream_port
+                "--sout=#transcode{venc=x264{level=30,"
+                "keyint=15,bframes=0,ref=1,nocabac},width=640,vcodec=x264,vb=400,acodec=mpga,ab=96,channels=2,samplerate=44100,scodec=dvbs,soverlay,threads==4}:http{mux=ts,dst=:%s/}" % stream_port
             ]
 
             addr = socket.gethostbyname(socket.gethostname())
             print(' * Chosen file: {}'.format(info['url']))
             print(' * Streaming from: {}:{}'.format(addr, stream_port))
             return subprocess.call(command)
-        else:
-            sys.stderr.write("Couldn't find a match url for the stream\n")
-            sys.stderr.flush()
-            return None
 
     def play(self, pattern, player):
         pattern = re.compile(pattern)
@@ -154,21 +159,21 @@ class Downloader(object):
         except IndexError:
             logging.warning("play: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
+        else:
+            logging.debug('Chosen info to play: {}'.format(info))
 
-        logging.debug('Chosen info to play: {}'.format(info))
+            command = [
+                player,
+                info['url'],
+            ]
 
-        command = [
-            player,
-            info['url'],
-        ]
+            if player in ("vlc", "cvlc"):
+                command.extend([
+                    "--file-caching=1000",
+                ])
 
-        if player in ("vlc", "cvlc"):
-            command.extend([
-                "--file-caching=1000",
-            ])
-
-        print(' * Playing url: {}'.format(info['url']))
-        return subprocess.call(command)
+            print(' * Playing url: {}'.format(info['url']))
+            return subprocess.call(command)
 
     def download(self, pattern):
         pattern = re.compile(pattern)
@@ -182,29 +187,29 @@ class Downloader(object):
         except IndexError:
             logging.warning("download: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
+        else:
+            response = session.get(info['url'], stream=True)
+            total_length = response.headers.get('content-length')
 
-        response = session.get(info['url'], stream=True)
-        total_length = response.headers.get('content-length')
+            local_filename = info['title']
+            if not local_filename:
+                local_filename = "sans-titre"
+            if info['ext'] not in local_filename:
+                local_filename = "{}{}".format(info['title'], info['ext'])
 
-        local_filename = info['title']
-        if not local_filename:
-            local_filename = "sans-titre"
-        if info['ext'] not in local_filename:
-            local_filename = "{}{}".format(info['title'], info['ext'])
+            with open(local_filename, 'wb') as f:
+                print("* Downloading from : {}".format(info['url']))
+                print("* Saving into : {}".format(local_filename))
+                if total_length is None:  # no content length header
+                    f.write(response.content)
+                else:
+                    dlsize = 0
+                    total_length = int(total_length)
+                    for chunk in response.iter_content(chunk_size=1024):
+                        if chunk:  # filter out keep-alive new chunks
+                            f.write(chunk)
+                            f.flush()
+                            dlsize += len(chunk)
 
-        with open(local_filename, 'wb') as f:
-            print("* Downloading from : {}".format(info['url']))
-            print("* Saving into : {}".format(local_filename))
-            if total_length is None:  # no content length header
-                f.write(response.content)
-            else:
-                dlsize = 0
-                total_length = int(total_length)
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:  # filter out keep-alive new chunks
-                        f.write(chunk)
-                        f.flush()
-                        dlsize += len(chunk)
-
-                        Reporter.report(dlsize, total_length)
-            print("")
+                            Reporter.report(dlsize, total_length)
+                print("")
