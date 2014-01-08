@@ -5,7 +5,7 @@ import re
 from pyquery import PyQuery
 
 from .common import BaseExtractor
-from spycis.utils import session, baseconv, urlparse
+from spycis.utils import session, urlparse, RequestException
 
 
 class MovreelExtractor(BaseExtractor):

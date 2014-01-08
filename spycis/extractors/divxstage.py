@@ -3,7 +3,7 @@ from mimetypes import guess_extension, guess_type
 import re
 
 from .common import BaseExtractor
-from spycis.utils import session
+from spycis.utils import session, RequestException
 from spycis.compat import *
 
 

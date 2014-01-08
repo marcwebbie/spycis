@@ -14,7 +14,7 @@ import time
 
 from spycis import extractors
 from spycis.utils import session
-from spycis.compat import Queue, urlparse
+from spycis.compat import *
 
 
 class Reporter(object):
@@ -123,7 +123,7 @@ class Downloader(object):
                 subtitle_path = urlparse(subtitle_path).path
                 subtitle_path = subtitle_path if subtitle_path else NamedTemporaryFile('w', delete=False).name
 
-            cmd = [
+            command = [
                 "cvlc",
                 "{}".format(video_path),
                 "--sub-file={}".format(subtitle_path),
@@ -135,7 +135,7 @@ class Downloader(object):
             addr = socket.gethostbyname(socket.gethostname())
             print(' * Chosen file: {}'.format(info['url']))
             print(' * Streaming from: {}:{}'.format(addr, stream_port))
-            return subprocess.call(cmd)
+            return subprocess.call(command)
         else:
             sys.stderr.write("Couldn't find a match url for the stream\n")
             sys.stderr.flush()
@@ -148,7 +148,8 @@ class Downloader(object):
                 i for i in self.info_list
                 if pattern.search(i['webpage_url']) or
                 pattern.search(i['url']) or
-                pattern.search(i['title'])]
+                pattern.search(i['title'])
+            ]
             info = random.choice(matched_infos)
         except IndexError:
             logging.warning("play: No raw url matched pattern: '{}'".format(pattern.pattern))
@@ -166,17 +167,16 @@ class Downloader(object):
                 "--file-caching=1000",
             ])
 
-        print(' * Playing url: {} ()'.format(
-            info['url'], info['webpage_url'])
-        )
-        subprocess.call(command)
+        print(' * Playing url: {}'.format(info['url']))
+        return subprocess.call(command)
 
     def download(self, pattern):
         pattern = re.compile(pattern)
         try:
             matched_infos = [
-                i for i in self.info_list
-                if pattern.search(i['webpage_url']) or pattern.search(i['url']) or pattern.search(i['title'])
+                i for i in self.info_list if pattern.search(i['webpage_url']) or
+                pattern.search(i['url']) or
+                pattern.search(i['title'])
             ]
             info = random.choice(matched_infos)
         except IndexError:
@@ -187,11 +187,14 @@ class Downloader(object):
         total_length = response.headers.get('content-length')
 
         local_filename = info['title']
+        if not local_filename:
+            local_filename = "sans-titre"
         if info['ext'] not in local_filename:
-            local_filename = "{}.{}".format(info['title'], info['ext'])
+            local_filename = "{}{}".format(info['title'], info['ext'])
 
         with open(local_filename, 'wb') as f:
-            print("Saving into : {}".format(local_filename))
+            print("* Downloading from : {}".format(info['url']))
+            print("* Saving into : {}".format(local_filename))
             if total_length is None:  # no content length header
                 f.write(response.content)
             else:

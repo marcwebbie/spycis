@@ -35,7 +35,7 @@ from spycis.utils import (
 )
 
 
-__version__ = "0.0.1-dev2"
+__version__ = "0.0.1-dev3"
 
 
 def get_logger():
@@ -112,7 +112,7 @@ def get_args():
                          "ex: `--site sitename`")
     aparser.add_argument("--site-list", action="store_true",
                          help="lister les sites de recherche disponibles")
-    aparser.add_argument("--workers", action="store", type=int, default=4,
+    aparser.add_argument("--workers", action="store", type=int, default=8,
                          help="Nombre des threads pour l'execution "
                          "ex: `--workers 20`")
     aparser.add_argument("--version", action='version',
