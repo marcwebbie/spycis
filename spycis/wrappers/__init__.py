@@ -2,7 +2,7 @@ import inspect
 import os
 import glob
 
-from .common import BaseWrapper
+from .common import BaseWrapper, Media, Episode, Stream
 
 __all__ = [os.path.basename(f)[:-3]
            for f in glob.glob(os.path.dirname(__file__) + "/*.py")]

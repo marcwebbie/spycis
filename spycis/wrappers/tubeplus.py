@@ -5,16 +5,8 @@ import logging
 import re
 from pyquery import PyQuery
 
-from spycis.decorators import lazyproperty
 from spycis.utils import session, urljoin, RequestException
 from .common import BaseWrapper, Media, Stream, Episode
-
-
-class LazyStream(Stream):
-
-    @lazyproperty
-    def url(self):
-        return 1
 
 
 class TubeplusWrapper(BaseWrapper):
