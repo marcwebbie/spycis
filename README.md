@@ -126,11 +126,14 @@ spycis -s s02e03 "Vampire Diaries"
 
 ###### Exemple output:
 ```bash
-http://www.divxstage.eu/video/46b593256e86d
-http://embed.nowvideo.sx/embed.php?v=3mlpxzgebdz0j
-http://embed.nowvideo.sx/embed.php?v=a4nrypw7ybimh
-http://putlocker.com/embed/0A0E80DF1AD75BB8
-http://embed.nowvideo.sx/embed.php?v=09cc4321affc8
+http://embed.nowvideo.sx/embed.php?v=5fd0e2c91f94f           [English]       subtitles=[]
+http://vidbull.com/embed-7i1xh24afy1c-650x328.html           [English]       subtitles=[]
+http://embed.nowvideo.sx/embed.php?v=7uf38f5ub01j3           [English]       subtitles=[]
+http://vidbull.com/embed-xu1nnexz2ers-650x328.html           [English]       subtitles=[]
+http://embed.novamov.com/embed.php?v=j9dyd2h9bnvn0           [English]       subtitles=[]
+http://www.divxstage.eu/video/25aadbe169644                  [English]       subtitles=[]
+http://vidbull.com/embed-37iq0bewngk5-650x328.html           [English]       subtitles=[]
+http://vidbull.com/embed-pxm4uio4fe9a-650x328.html           [English]       subtitles=[]
 ```
 
 ##### Obtenir les `raw urls` pour la position par defaul(`0`) dans la recherche avec le code épisode `s02e03`:
@@ -161,11 +164,11 @@ spycis -p 1 -s s01e16 house
 ###### Exemple output:
 
 ```bash
-http://www.putlocker.com/embed/4EB13DEA60C9EF28
-http://gorillavid.in/embed-kdk7i5r1p5ye-650x400.html
-http://www.sockshare.com/embed/0830C86867F3EE66
-http://gorillavid.in/embed-iabh7e6bchgq-650x400.html
-http://gorillavid.in/embed-30y7ahav048u-650x400.html
+http://www.putlocker.com/embed/4EB13DEA60C9EF28              [English]       subtitles=[]
+http://gorillavid.in/embed-kdk7i5r1p5ye-650x400.html         [English]       subtitles=[]
+http://www.sockshare.com/embed/0830C86867F3EE66              [English]       subtitles=[]
+http://gorillavid.in/embed-iabh7e6bchgq-650x400.html         [English]       subtitles=[]
+http://gorillavid.in/embed-30y7ahav048u-650x400.html         [English]       subtitles=[]
 ```
 
 ##### Obtenir les `raw urls` pour la position de recherche `1` avec le code épisode `s01e16`.
@@ -224,9 +227,9 @@ spycis --site loveserie -s s01e08 deadwood
 ###### Exemple output:
 
 ```bash
-http://youwatch.org/l0lqxt7w5t25
-http://youwatch.org/cd49rhqmpbps
-http://www.duckstreaming.com/lm0fhyxsrhxj
+http://youwatch.org/l0lqxt7w5t25                             [English]       subtitles=['French']
+http://youwatch.org/cd49rhqmpbps                             [French]        subtitles=[]
+http://www.duckstreaming.com/lm0fhyxsrhxj                    [French]        subtitles=[]
 ```
 
 ### 5. Les options bonus
