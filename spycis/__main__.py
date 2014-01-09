@@ -161,7 +161,8 @@ def run(args=get_args()):
         logger.setLevel(logging.CRITICAL)
         raw_url_info = False
 
-    downloader = Downloader(workers=args.workers, raw_url_info=raw_url_info)
+    downloader = Downloader(
+        workers=args.workers, raw_url_info=raw_url_info)
 
     site = wrappers.get_instance(args.site)
     if not site:
@@ -173,7 +174,8 @@ def run(args=get_args()):
         sys.exit(0)
 
     if site.is_valid_url(url=args.query):
-        logging.debug("Found a valid url for site: '{}'".format(args.query))
+        """Get stream urls from media url from stream url specified"""
+        logging.debug("Found valid media url: '{}'".format(args.query))
 
         url = args.query
         code = args.raw_urls if args.raw_urls else args.stream_urls
@@ -185,35 +187,29 @@ def run(args=get_args()):
                 print(stream.url)
 
     elif is_stream_url(url=args.query):
-        logging.debug("Found a valid url for site: '{}'".format(args.query))
+        """Extract raw urls from stream url specified"""
+        logging.debug("Found valid stream url: '{}'".format(args.query))
+
         url = args.query
         downloader.extract([url])
 
-    elif is_raw_url(url=args.query):
+    elif is_raw_url(url=args.query) or is_local_file(path=args.query):
+        """Add raw url or local file to raw url list"""
+        logging.debug("Found valid file/raw url: '{}'".format(args.query))
+
         url = args.query
-        parsed_url = urlparse(url)
-        title = os.path.basename(parsed_url.path)
+        if is_raw_url(url=url):
+            parsed_url = urlparse(url)
+            title = os.path.basename(parsed_url.path)
+        elif is_local_file(path=url):
+            filepath = get_absolute_path(url)
+            title = os.path.basename(filepath)
         extension = guess_extension(guess_type(parsed_url.path)[0])
 
         info = {
             "id": "unknown",
             "title": title,
             "url": url,
-            "ext": extension,
-        }
-        downloader.info_list.append(info)
-        logging.debug('added raw url: {}'.format(info['url']))
-
-    elif is_local_file(path=args.query):
-        """Ajoute le fichier local a la liste de infos du Downloader"""
-        filepath = get_absolute_path(args.query)
-        title = os.path.basename(filepath)
-        extension = guess_extension(guess_type(title)[0])
-
-        info = {
-            "id": "unknown",
-            "title": title,
-            "url": filepath,
             "ext": extension,
         }
         downloader.info_list.append(info)
@@ -234,19 +230,28 @@ def run(args=get_args()):
         streams = site.get_streams(chosen_media_url, code=code)
 
         if args.stream_urls:
-            """Obtenir les stream urls pour la position 0 ou autre si position specifié"""
+            """
+            Obtenir les stream urls pour la position 0 ou
+            autre si position specifié
+            """
             for stream in streams:
                 print(stream.url)
 
         elif args.raw_urls:
-            """Obtenir les raw urls pour la position 0 ou autre si position specifié"""
+            """
+            Obtenir les raw urls pour la position 0 ou
+            autre si position specifié
+            """
             downloader.extract(s.url for s in streams)
 
         elif args.position:
-            """Obtenir les raw urls pour la position de recherche specifié.
+            """
+            Obtenir les raw urls pour la position de
+            recherche specifié.
 
             Attention ça marche que pour les film, pour les series au moins
-            un code episode doit être informé au format:-p 30 -r s01e01"""
+            un code episode doit être informé au format:-p 30 -r s01e01
+            """
             downloader.extract(s.url for s in streams)
 
         else:
@@ -261,38 +266,20 @@ def run(args=get_args()):
                 print(position_line)
 
     # Bonus options
-    if args.play:
-        if downloader.info_list:
-            pattern = args.play
-            player = args.player
-            downloader.play(pattern=pattern, player=player)
-        else:
-            logging.warning(
-                'No raw urls were found to proceed with playing'
-                ' try running with -r ou --raw-urls argument')
-
-    elif args.stream:
-        if downloader.info_list:
-            pattern = args.stream
-            stream_port = args.stream_port
-            subtitles = args.subtitles
-            downloader.stream(pattern=pattern,
-                              stream_port=stream_port,
-                              subtitles=subtitles)
-        else:
-            logging.warning(
-                'No raw urls were found to proceed with streaming'
-                ' try running with -r ou --raw-urls argument')
-
-    elif args.download:
-        if downloader.info_list:
-            pattern = args.download
-            downloader.download(pattern=pattern,)
-        else:
-            logging.warning(
-                'No raw urls were found to proceed with download'
-                ' try running with -r ou --raw-urls argument')
-
+    if args.download:
+        pattern = args.download
+        downloader.download(pattern=pattern,)
+    elif args.play and downloader.info_list:
+        pattern = args.play
+        player = args.player
+        downloader.play(pattern=pattern, player=player)
+    elif args.stream and downloader.info_list:
+        pattern = args.stream
+        stream_port = args.stream_port
+        subtitles = args.subtitles
+        downloader.stream(pattern=pattern,
+                          stream_port=stream_port,
+                          subtitles=subtitles)
 if __name__ == '__main__':
     try:
         run()
