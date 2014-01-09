@@ -1,3 +1,5 @@
+from __future__ import unicode_literals, division, print_function
+
 from collections import namedtuple
 import logging
 import re
@@ -22,12 +24,13 @@ class LoveserieWrapper(BaseWrapper):
         """
         vcode = vcode.upper()
         VersionCode = namedtuple('VersionCode', 'language subtitles')
-        if vcode.startswith('VO'):
-            return VersionCode(language="English", subtitles=[])
-        elif vcode.startswith('VF'):
-            return VersionCode(language="French", subtitles=[])
-        elif vcode.startswith('VOST'):
+
+        if vcode.startswith('VOS'):
             return VersionCode(language="English", subtitles=["French"])
+        elif vcode == 'VO':
+            return VersionCode(language="English", subtitles=[])
+        elif vcode == 'VF':
+            return VersionCode(language="French", subtitles=[])
 
     def get_available_episodes(self, media_url):
         if not self.is_valid_url(media_url):
@@ -61,8 +64,6 @@ class LoveserieWrapper(BaseWrapper):
         if not code:
             raise StopIteration()
 
-        season, episode = self._parse_episode_code(code)
-
         if not self.is_valid_url(media_url):
             raise ValueError(
                 "Not a valid url for this site: {}".format(media_url))
@@ -74,31 +75,25 @@ class LoveserieWrapper(BaseWrapper):
             raise StopIteration()
 
         pq = PyQuery(res.text)
+        season, episode = self._parse_episode_code(code)
 
-        season_divs = list(pq(".seasonheader + div").items())
-        for season_num, sdiv in enumerate(reversed(season_divs), start=1):
-            episode_divs = sdiv('.episodeitem').items()
-
-            for episode_num, epdiv in enumerate(episode_divs, start=1):
-                if season_num == season and episode_num == episode:
-                    version = epdiv('td:first').text().split()[-1]
-                    language, subtitles = self._parse_version(version)
-
-                    links = epdiv('.watchbutton a:contains("Regarder")').items()
-
-                    for href in [a.attr('href') for a in links]:
+        for snum, sdiv in enumerate(reversed(list(pq('.seasonheader + div').items())), start=1):
+            for epnum, epdiv in enumerate(sdiv('.episodeitem').items(), start=1):
+                if snum == season and epnum == episode:
+                    for link in epdiv('.linkitem').items():
+                        language, subtitles = self._parse_version(link('.italic b:last').text())
+                        href = link('.watchbutton:first a').attr('href')
                         try:
-                            mobj = re.search(r'(https?://.*?)&', unquote(href))
-                            url = mobj.group(1)
-                        except (AttributeError, TypeError):
-                            logging.error("Couldn't build stream url")
+                            url = re.search(r'(https?://.*?)&', unquote(href)).group(1)
+                        except (AttributeError, TypeError) as e:
+                            logging.debug("Couldn't get stream url")
                         else:
                             stream = Stream(
                                 url=url,
                                 language=language,
                                 subtitles=subtitles,
-                                hd=False,)
-
+                                hd=False,
+                            )
                             yield stream
 
     def search(self, query):
