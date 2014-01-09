@@ -22,7 +22,6 @@ if __package__ is None and not hasattr(sys, "frozen"):
     path = os.path.realpath(os.path.abspath(__file__))
     sys.path.append(os.path.dirname(os.path.dirname(path)))
 
-from spycis.compat import *
 from spycis import wrappers
 from spycis.downloader import Downloader
 from spycis.utils import (
@@ -36,7 +35,7 @@ from spycis.utils import (
 )
 
 
-__version__ = "0.0.1-dev4"
+__version__ = "0.0.1-dev5"
 
 
 def get_logger():
@@ -116,7 +115,7 @@ def get_args():
                          "ex: `--site sitename`")
     aparser.add_argument("--site-list", action="store_true",
                          help="lister les sites de recherche disponibles")
-    aparser.add_argument("--workers", action="store", type=int, default=8,
+    aparser.add_argument("--workers", action="store", type=int, default=4,
                          help="Nombre des threads pour l'execution "
                          "ex: `--workers 20`")
     aparser.add_argument("--version", action='version',
@@ -185,7 +184,11 @@ def run(args=get_args()):
             downloader.extract(streams)
         else:
             for stream in streams:
-                print(stream.url)
+                fstr = "{:<60} {:<15} subtitles={}".format(
+                    stream.url,
+                    "[{}]".format(stream.language),
+                    stream.subtitles)
+                print(fstr)
 
     elif is_stream_url(url=args.query):
         """Extract raw urls from stream url specified"""
@@ -236,7 +239,11 @@ def run(args=get_args()):
             autre si position specifié
             """
             for stream in streams:
-                print(stream.url)
+                fstr = "{:<60} {:<15} subtitles={}".format(
+                    stream.url,
+                    "[{}]".format(stream.language),
+                    stream.subtitles)
+                print(fstr)
 
         elif args.raw_urls:
             """
