@@ -4,8 +4,9 @@ import re
 
 from pyquery import PyQuery
 
-from .common import BaseExtractor
+from spycis.compat import *
 from spycis.utils import session, urlparse, RequestException
+from .common import BaseExtractor
 
 
 class MovreelExtractor(BaseExtractor):
@@ -22,7 +23,6 @@ class MovreelExtractor(BaseExtractor):
 
     def extract(self, video_id_or_url):
         """Extract info from a movreel.com stream url"""
-        video_extractor = self.name
         if self.regex_url.match(video_id_or_url):
             video_id = self.regex_url.match(video_id_or_url).group('id')
         else:

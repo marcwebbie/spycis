@@ -3,8 +3,8 @@ import logging
 import re
 from pyquery import PyQuery
 
-from spycis.utils import session, RequestException
-from spycis.compat import urljoin, unquote
+from spycis.utils import session, RequestException, urljoin, unquote
+from spycis.compat import *
 from .common import BaseWrapper, Media, Stream, Episode
 
 

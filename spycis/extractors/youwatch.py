@@ -4,8 +4,10 @@ import re
 
 from pyquery import PyQuery
 
+from spycis.compat import *
+from spycis.utils import (
+    session, urlparse, RequestException, unquote, unpacker)
 from .common import BaseExtractor
-from spycis.utils import session, urlparse, RequestException, unquote, unpacker
 
 
 class YouWatchExtractor(BaseExtractor):

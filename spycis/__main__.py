@@ -22,8 +22,8 @@ if __package__ is None and not hasattr(sys, "frozen"):
     path = os.path.realpath(os.path.abspath(__file__))
     sys.path.append(os.path.dirname(os.path.dirname(path)))
 
+from spycis.compat import *
 from spycis import wrappers
-from spycis.compat import urlparse
 from spycis.downloader import Downloader
 from spycis.utils import (
     Color,
@@ -31,7 +31,8 @@ from spycis.utils import (
     get_absolute_path,
     is_local_file,
     is_stream_url,
-    is_raw_url
+    is_raw_url,
+    urlparse,
 )
 
 

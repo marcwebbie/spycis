@@ -2,9 +2,9 @@ import logging
 from mimetypes import guess_extension, guess_type
 import re
 
+from spycis.compat import *
+from spycis.utils import session, urlparse, RequestException
 from .common import BaseExtractor
-from spycis.utils import session, RequestException
-from spycis.compat import urlparse
 
 
 class GorillaVidExtractor(BaseExtractor):

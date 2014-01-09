@@ -4,9 +4,10 @@ import re
 
 from pyquery import PyQuery
 
+from spycis.compat import *
+from spycis.utils import (
+    session, RequestException, unpacker, unquote, urlparse)
 from .common import BaseExtractor
-from spycis.utils import session, RequestException, unpacker
-from spycis.compat import unquote, urlparse
 
 
 class VidbullExtractor(BaseExtractor):

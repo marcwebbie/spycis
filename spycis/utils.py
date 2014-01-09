@@ -1,10 +1,22 @@
 from functools import partial
+from mimetypes import guess_extension, guess_type
 import os
 import re
-from mimetypes import guess_extension, guess_type
 import requests
 from requests.exceptions import RequestException
+import sys
 
+if sys.version_info >= (3,):
+    from queue import Queue
+    from urllib.parse import urlparse, urlunparse, unquote
+    from urllib.request import urljoin
+    from io import StringIO
+else:
+    # fallback to python2
+    from Queue import Queue
+    from urllib import unquote
+    from urlparse import urlparse, urlunparse, urljoin
+    from StringIO import StringIO
 from .compat import *
 from .extractors import get_instances
 
@@ -59,7 +71,7 @@ def is_raw_url(url):
     url_scheme = parsed_url.scheme
     url_path = parsed_url.path
     try:
-        url_extension = guess_extension(guess_type(parsed_url.path)[0])
+        url_extension = guess_extension(guess_type(url_path)[0])
     except AttributeError:
         return None
 

@@ -3,9 +3,14 @@ import re
 
 from pyquery import PyQuery
 
+from spycis.compat import *
+from spycis.utils import (
+    session,
+    RequestException,
+    guess_type,
+    urlparse,
+    guess_extension)
 from .common import BaseExtractor
-from spycis.utils import session, RequestException, guess_type, guess_extension
-from spycis.compat import urlparse
 
 
 class PutlockerExtractor(BaseExtractor):

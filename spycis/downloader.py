@@ -13,8 +13,8 @@ from threading import Thread
 import time
 
 from spycis import extractors
-from spycis.utils import session
-from spycis.compat import *
+from spycis.utils import session, Queue, urlparse
+# from spycis.compat import *
 
 
 class Reporter(object):

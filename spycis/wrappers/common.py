@@ -1,6 +1,8 @@
 import re
 from collections import namedtuple
 
+from spycis.compat import *
+
 Stream = namedtuple("Stream", "url language subtitles hd")
 Episode = namedtuple("Episode", "season episode title url air_date")
 

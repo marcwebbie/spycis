@@ -5,6 +5,7 @@ import logging
 import re
 from pyquery import PyQuery
 
+from spycis.compat import *
 from spycis.utils import session, urljoin, RequestException
 from .common import BaseWrapper, Media, Stream, Episode
 
