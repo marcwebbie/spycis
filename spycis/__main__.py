@@ -202,6 +202,7 @@ def run(args=get_args()):
             "ext": extension,
         }
         downloader.info_list.append(info)
+        logging.debug('added raw url: {}'.format(info['url']))
 
     elif is_local_file(path=args.query):
         """Ajoute le fichier local a la liste de infos du Downloader"""
@@ -216,6 +217,7 @@ def run(args=get_args()):
             "ext": extension,
         }
         downloader.info_list.append(info)
+        logging.debug('added raw url: {}'.format(info['url']))
 
     else:
         medias = site.search(args.query)
