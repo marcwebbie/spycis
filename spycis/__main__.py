@@ -76,53 +76,69 @@ def get_version():
     return "Spycis v{}".format(__version__)
 
 
+class SiteList(argparse.Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print("List of available sites: ")
+        print("\n".join(w.name for w in wrappers.get_instances()))
+        print('')
+        parser.exit()
+
+
+def get_langs():
+    return "fre eng br"
+
+
 def get_args():
     aparser = argparse.ArgumentParser()
+    group = aparser.add_argument_group('Optionnel basique')
 
-    aparser.add_argument("-r", "--raw-urls",
-                         help="Retourne les raw urls pour le code. "
-                         "ex: `-r s02e31` ou `--raw-urls  s02e31`")
-    aparser.add_argument("-s", "--stream-urls",
-                         help="Retourne les stream urls pour le code "
-                         ". ex: `-s s02e31` ou `--stream-urls  s02e31`")
-    aparser.add_argument("-p", "--position", type=int, default=0,
-                         help="Options utilisé avec `-r` ou `-s` pour "
-                         "specifié la positon¹. ex: `-p 2 -r s02e31`")
+    group.add_argument("-r", "--raw-urls", metavar="sSSeEE",
+                       help="Retourne les raw urls pour le code. "
+                       "ex: `-r s02e31` ou `--raw-urls  s02e31`")
+    group.add_argument("-s", "--stream-urls", metavar="sSSeEE",
+                       help="Retourne les stream urls pour le code"
+                       ". ex: `-s s02e31` ou `--stream-urls  s02e31`")
+    group.add_argument("-p", "--position", type=int, default=0,
+                       help="Options utilisé avec `-r` ou `-s` pour "
+                       "specifié la positon¹. ex: `-p 2 -r s02e31`")
 
-    aparser.add_argument("--play",
-                         help="Executer le premier fichier que "
-                         "match le pattern. ex: `--play mp4`")
-    aparser.add_argument("--player", default="vlc",
-                         help="Choisir le player pour l'option play "
-                         "ex: `--player amarok`")
-    aparser.add_argument("--download",
-                         help="Télécharge le premier fichier "
-                         "que match le pattern. ex: `--download mp4`")
-    aparser.add_argument("--stream",
-                         help="Ouvre streaming sur la porte specifié. "
-                         "ex: `--stream 8080`")
-    aparser.add_argument("--stream-port", default=8080, type=int,
-                         help="Choisir le player pour l'option play "
-                         "ex: `--player amarok`")
-    aparser.add_argument("--subtitles",
-                         help="Ouvre streaming pour les soustitres "
-                         "ex: `--subtitles mes_sous_titres.srt`")
+    group2 = aparser.add_argument_group('Optionnel bonus')
+    group2.add_argument("--play", metavar="PATTERN",
+                        help="Executer le premier fichier que "
+                        "match le pattern. ex: `--play mp4`")
+    group2.add_argument("--player", default="vlc",
+                        help="Choisir le player pour l'option play "
+                        "ex: `--player amarok`")
+    group2.add_argument("--download", metavar="PATTERN",
+                        help="Télécharge le premier fichier "
+                        "que match le pattern. ex: `--download mp4`")
+    group2.add_argument("--stream", metavar="PATTERN",
+                        help="Ouvre streaming sur la porte specifié. "
+                        "ex: `--stream 8080`")
+    group2.add_argument("--stream-port", default=8080, type=int,
+                        help="Streaming sur la porte HTTP choisi "
+                        "ex: `--stream-port 9000`")
+    group2.add_argument("--subtitles",
+                        help="Ouvre streaming pour les soustitres "
+                        "ex: `--subtitles mes_sous_titres.srt`")
 
-    aparser.add_argument("-v", "--verbose", action="count",
-                         help="active le mode verbose pour debugging")
-    aparser.add_argument("--site", default="tubeplus",
-                         help="Changer le site de recherche. "
-                         "ex: `--site sitename`")
-    aparser.add_argument("--site-list", action="store_true",
-                         help="lister les sites de recherche disponibles")
-    aparser.add_argument("--workers", action="store", type=int, default=4,
-                         help="Nombre des threads pour l'execution "
-                         "ex: `--workers 20`")
-    aparser.add_argument("--version", action='version',
-                         version=get_version(), help="imprime version")
+    group3 = aparser.add_argument_group('Optionnel avancée')
+    group3.add_argument("-v", "--verbose", action="count",
+                        help="active le mode verbose pour debugging")
+    group3.add_argument("--site", default="tubeplus",
+                        help="Changer le site de recherche. "
+                        "ex: `--site sitename`")
+    group3.add_argument("--site-list", action=SiteList, nargs="?",
+                        help="lister les sites de recherche disponibles")
+    group3.add_argument("--workers", action="store", type=int, default=4,
+                        help="Nombre des threads pour l'execution "
+                        "ex: `--workers 20`")
+    group3.add_argument("--version", action='version',
+                        version=get_version(), help="imprime version")
 
-    aparser.add_argument("query",
-                         help="L'argument principale pour les recherches")
+    group3.add_argument("query",
+                        help="L'argument principale pour les recherches")
 
     args = aparser.parse_args()
     return args
@@ -166,12 +182,8 @@ def run(args=get_args()):
 
     site = wrappers.get_instance(args.site)
     if not site:
-        print("ERROR: Not an available site")
-        print_available_sites()
+        print("ERROR: Not an available site. try: `spycis --site-list`")
         sys.exit(1)
-    elif args.site_list:
-        print_available_sites()
-        sys.exit(0)
 
     if site.is_valid_url(url=args.query):
         """Get stream urls from media url from stream url specified"""
@@ -208,10 +220,11 @@ def run(args=get_args()):
         elif is_local_file(path=url):
             filepath = get_absolute_path(url)
             title = os.path.basename(filepath)
-        extension = guess_extension(guess_type(parsed_url.path)[0])
+        extension = guess_extension(guess_type(filepath)[0])
 
         info = {
             "id": "unknown",
+            "webpage_url": "unknown",
             "title": title,
             "url": url,
             "ext": extension,
