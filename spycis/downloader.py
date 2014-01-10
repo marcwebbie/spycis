@@ -142,7 +142,7 @@ class Downloader(object):
             ]
 
             addr = socket.gethostbyname(socket.gethostname())
-            print(' * Chosen file: {}'.format(info['url']))
+            print(' * Playing file at: {}'.format(info['url']))
             print(' * Streaming from: {}:{}'.format(addr, stream_port))
             return subprocess.call(command)
 
@@ -172,7 +172,7 @@ class Downloader(object):
                     "--file-caching=1000",
                 ])
 
-            print(' * Playing url: {}'.format(info['url']))
+            print(' * Playing file at: {}'.format(info['url']))
             return subprocess.call(command)
 
     def download(self, pattern):
