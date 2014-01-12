@@ -19,7 +19,7 @@ setup(
     author_email='marcwebbie@gmail.com',
     scripts=["bin/spycis", "bin/opensubtitles"],
     packages=find_packages(),
-    install_requires=open('requirements.pip').readlines(),
+    install_requires=open('requirements.txt').readlines(),
     test_suite='tests.test',
     classifiers=[
         'Development Status :: Alpha',
