@@ -1,0 +1,5 @@
+pyquery
+requests
+youtube-dl
+pyquery
+guessit
