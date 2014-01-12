@@ -15,7 +15,7 @@ class TubeplusWrapper(BaseWrapper):
     def __init__(self):
         self.site_url = "http://www.tubeplus.me"
         self.url_regex = re.compile(
-            r"http\://www\.tubeplus\.me/player/\d+/?(?:.*?)?")
+            r"(http\://www\.tubeplus\.me/player/\w+/).*?$")
 
     def _build_stream_url(self, video_id, host):
         if host in ("putlocker.com",):
