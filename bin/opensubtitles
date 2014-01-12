@@ -17,6 +17,8 @@ import guessit
 import requests
 from pyquery import PyQuery
 
+__version__ = "0.0.1-dev1"
+
 headers = {
     "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
                    "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -113,6 +115,7 @@ def get_args():
     aparser = argparse.ArgumentParser()
     aparser.add_argument("-l", "--language", default='fre', help="subtitles language")
     aparser.add_argument("-o", "--output", action="store_true", help="output filepath")
+    aparser.add_argument("--version", action="version", version=__version__, help="output filepath")
     aparser.add_argument("-i", "--iteractive", help="iteractive mode")
     aparser.add_argument("video_path", help="path to video for seeking subtitles")
     args = aparser.parse_args()
