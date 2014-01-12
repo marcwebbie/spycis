@@ -396,10 +396,3 @@ Spycis fournit trois types de urls
 + __media urls__: L’adresse de la page sur le site ou spycis a trouvé le media(série/film/musique). Ces pages ont normalement l'information sur le media aussi comme plusieurs stream urls. exemple: `http://www.filmesonlinegratis.net/assistir-12-anos-de-escravidao-legendado-online.html`
 + __stream urls__: L’adresse de la page d'un site de streaming. Sur ces pages nous pouvons regarder les vidéos en ligne sans avoir besoin de télécharger la vidéo. les sites 'youtube', 'dailymotion', 'vimeo' sont des sites de streaming. example de stream url : `http://www.youtube.com/watch?v=VAJ8wZ97x94`
 + __raw urls__: L’adresse du vrai fichier, avec cette url nous pouvons télécharger la vidéo sur l'ordinateur. Ces liens sont normalement cachés du publique(pour faire les utilisateur régarder les videos sur leur stream urls). exemple de une raw url: `http://50.7.161.75:182/d/z5sj6h3iljrwuxim4y6sl4qu6gqlucqvfdxuelpkzxvacn37sxj6oc74/video.mp4` 
-
-
-## Cadeau
-
-Image bonus pour toi
-
-![je taime](http://images2.fanpop.com/image/photos/13800000/Key-to-my-Heart-speter-13806362-1280-800.jpg)
