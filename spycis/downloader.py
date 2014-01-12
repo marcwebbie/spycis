@@ -8,7 +8,6 @@ import random
 import socket
 import subprocess
 import sys
-from tempfile import NamedTemporaryFile
 from threading import Thread
 import time
 
