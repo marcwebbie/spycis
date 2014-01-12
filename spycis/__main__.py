@@ -35,7 +35,7 @@ from spycis.utils import (
 )
 
 
-__version__ = "0.0.1-dev7"
+__version__ = "0.0.1-dev8"
 
 
 def get_logger():
