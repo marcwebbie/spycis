@@ -128,8 +128,6 @@ class Downloader(object):
                     info['title'])
                 subs_path = input(prompt).strip().strip('"\'')
                 subs_path = urlparse(subs_path).path
-                # subs_path = (subs_path if subs_path else
-                #              NamedTemporaryFile('w', delete=False).name)
 
             command = [
                 "cvlc",
@@ -168,7 +166,8 @@ class Downloader(object):
 
             if player in ("vlc", "cvlc"):
                 command.extend([
-                    "--file-caching=1000",
+                    "--sub-autodetect-file",
+                    "--file-caching=3000",
                 ])
 
             print(' * Playing file at: {}'.format(info['url']))
