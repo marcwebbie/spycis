@@ -46,7 +46,7 @@ Les options des bonus sont toujours utilisées avec ses noms longs pour ne pas c
 
 ### Options avancées
 
-+ `--site-list`: Voir la liste de sites disponibles. ex: `--site-lite all`
++ `--site-list`: Voir la liste de sites disponibles. ex: `--site-lite`
 + `--site`: Changer le site de recherche. ex: `--site sitename`
 + `-v`, `-vv` ou `--verbose`: Activer le mode débogage. ex: -v, `--verbose`, pour plus de debogage `-vv`: 
 + `--workers`: Nombre des threads pour l'extraction des urls ex: `--workers 20`
@@ -205,7 +205,7 @@ http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivlfet
 ##### Lister les sites disponibles:
 
 ```bash
-spycis --site-list all
+spycis --site-list
 ```
 
 ###### Exemple output:
