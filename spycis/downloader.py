@@ -14,7 +14,6 @@ import time
 
 from spycis import extractors
 from spycis.utils import session, Queue, urlparse
-# from spycis.compat import *
 
 
 class Reporter(object):
@@ -129,13 +128,13 @@ class Downloader(object):
                     info['title'])
                 subs_path = input(prompt).strip().strip('"\'')
                 subs_path = urlparse(subs_path).path
-                subs_path = (subs_path if subs_path else
-                             NamedTemporaryFile('w', delete=False).name)
+                # subs_path = (subs_path if subs_path else
+                #              NamedTemporaryFile('w', delete=False).name)
 
             command = [
                 "cvlc",
                 "{}".format(video_path),
-                "--sub-file={}".format(subs_path),
+                "--sub-file={}".format(subs_path) if subs_path else "--sub-autodetect-file",
                 "--file-caching=3000",
                 "--sout=#transcode{venc=x264{level=30,"
                 "keyint=15,bframes=0,ref=1,nocabac},width=640,vcodec=x264,vb=400,acodec=mpga,ab=96,channels=2,samplerate=44100,scodec=dvbs,soverlay,threads==4}:http{mux=ts,dst=:%s/}" % stream_port
