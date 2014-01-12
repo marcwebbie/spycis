@@ -103,7 +103,7 @@ class Downloader(object):
             if extractor:
                 info = extractor.extract(url)
                 if info:
-                    print(info if self.print_as_info else info['url'])
+                    print(info if self.raw_url_info else info['url'])
                     self.info_list.append(info)
 
     def stream(self, pattern, stream_port, subtitles):
