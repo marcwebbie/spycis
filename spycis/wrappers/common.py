@@ -38,10 +38,10 @@ class BaseWrapper(object):
 
     @staticmethod
     def _parse_episode_code(code):
-        """Parse an episode code in the format sSSeEE, 
+        """Parse an episode code in the format sSSeEE,
         returns tuple (season_num, episode_num)"""
         try:
-            season, episode = re.match(r'[sS](\d+)[eE](\d+)', code.lower()).groups()
+            season, episode = re.match(r'[sS]?(\d+)[eE](\d+)', code.lower()).groups()
             season = int(season.strip('0'))
             episode = int(episode.strip('0'))
         except AttributeError:
