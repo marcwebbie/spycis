@@ -234,7 +234,7 @@ def run(args=get_args()):
     else:
         medias = site.search(args.query)
         try:
-            chosen_media_url = medias[args.position].url
+            chosen_media_url = medias[args.position - 1].url
         except IndexError:
             logging.error("Not a valid position")
             return None
@@ -278,7 +278,7 @@ def run(args=get_args()):
             downloader.extract(s.url for s in streams)
 
         else:
-            for position, media in enumerate(medias):
+            for position, media in enumerate(medias, start=1):
                 position_line = "{0:<15} {1:<15} {2:<55} [{3}] ({4})".format(
                     "[{}]".format(set_color(position, Color.YELLOW)),
                     [media.category],
