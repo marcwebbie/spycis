@@ -27,8 +27,8 @@ session.headers.update(headers)
 http_adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
 session.mount('http://', http_adapter)
 # patch session to use timeout
-session.get = partial(session.get, timeout=3)
-session.post = partial(session.post, timeout=3)
+session.get = partial(session.get, timeout=5)
+session.post = partial(session.post, timeout=5)
 
 
 def baseconv(number, base=10):

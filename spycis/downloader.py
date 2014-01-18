@@ -12,7 +12,7 @@ from threading import Thread
 import time
 
 from spycis import extractors
-from spycis.utils import session, Queue, urlparse
+from spycis.utils import Queue, urlparse
 
 
 class Reporter(object):
@@ -185,6 +185,33 @@ class Downloader(object):
             logging.warning("download: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
         else:
+            agent = "Mozilla/5.0 (X11; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0"
+            url = info["url"]
+            command = ['wget', '-U', agent, url]
+
+            local_filename = info['title']
+            if local_filename:
+                if info['ext'] not in local_filename:
+                    local_filename = "{}{}".format(
+                        info['title'], info['ext'])
+                command.extend(['-O', local_filename])
+
+            return subprocess.call(command)
+
+'''
+    def download(self, pattern):
+        pattern = re.compile(pattern)
+        try:
+            matched_infos = [
+                i for i in self.info_list if pattern.search(i['webpage_url']) or
+                pattern.search(i['url']) or
+                pattern.search(i['title'])
+            ]
+            info = random.choice(matched_infos)
+        except IndexError:
+            logging.warning("download: No raw url matched pattern: '{}'".format(pattern.pattern))
+            return None
+        else:
             response = session.get(info['url'], stream=True)
             total_length = response.headers.get('content-length')
 
@@ -210,3 +237,4 @@ class Downloader(object):
 
                             Reporter.report(dlsize, total_length)
                 print("")
+'''
