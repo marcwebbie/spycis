@@ -195,9 +195,9 @@ def run(args=get_args()):
             downloader.extract(streams)
         else:
             for stream in streams:
-                fstr = "{:<60} {:<15} subtitles={}".format(
+                fstr = "{:<60} {:<25} subtitles={}".format(
                     stream.url,
-                    "[{}]".format(stream.language),
+                    "[{}]".format(set_color(stream.language, Color.RED)),
                     stream.subtitles)
                 print(fstr)
 
@@ -238,6 +238,9 @@ def run(args=get_args()):
         except IndexError:
             logging.error("Not a valid position")
             return None
+        except TypeError:
+            logging.error("No media url was found")
+            return None
 
         code = (args.stream_urls if args.stream_urls else
                 args.raw_urls if args.raw_urls else
@@ -251,9 +254,9 @@ def run(args=get_args()):
             autre si position specifié
             """
             for stream in streams:
-                fstr = "{:<60} {:<15} subtitles={}".format(
+                fstr = "{:<60} {:<25} subtitles={}".format(
                     stream.url,
-                    "[{}]".format(stream.language),
+                    "[{}]".format(set_color(stream.language, Color.RED)),
                     stream.subtitles)
                 print(fstr)
 
@@ -276,7 +279,7 @@ def run(args=get_args()):
 
         else:
             for position, media in enumerate(medias):
-                position_line = "{0:<15} {1:<13} {2:<55} [{3}] ({4})".format(
+                position_line = "{0:<15} {1:<15} {2:<55} [{3}] ({4})".format(
                     "[{}]".format(set_color(position, Color.YELLOW)),
                     [media.category],
                     set_color(repr("{:.42}".format(media.title)), Color.GREEN),

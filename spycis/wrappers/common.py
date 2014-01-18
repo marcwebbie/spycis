@@ -12,12 +12,13 @@ class Media(object):
     FILM = "film"
     SONG = "song"
 
-    def __init__(self, title, url, wrapper, category, *args, **kwargs):
+    def __init__(self, title, url, wrapper, category, **kwargs):
         self.title = title
         self.url = url
         self.wrapper = wrapper
         self.category = category
 
+        self.duration = kwargs.get("duration", None)
         self.description = kwargs.get("description", None)
         self.thumbnail = kwargs.get("thumbnail", None)
         self.tags = kwargs.get("tags", [])
