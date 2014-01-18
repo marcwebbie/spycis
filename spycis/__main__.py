@@ -85,10 +85,6 @@ class SiteList(argparse.Action):
         parser.exit()
 
 
-def get_langs():
-    return "fre eng br"
-
-
 def get_args():
     aparser = argparse.ArgumentParser()
     group = aparser.add_argument_group('Optionnel basique')
