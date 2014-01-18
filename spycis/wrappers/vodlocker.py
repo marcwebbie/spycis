@@ -48,13 +48,11 @@ class VodlockerWrapper(BaseWrapper):
             title = tr('.link').text()
             url = tr('.link a').attr('href')
             category_info = tr('div:contains("Category")').text()
-            # category = (
-            #     Media.FILM
-            #     if "Movie" in category_info
-            #     else Media.TVSHOW if "TV" in category_info
-            #     else "no category")
             category = (
-                Media.FILM if "Movie" in category_info else Media.TVSHOW)
+                Media.FILM
+                if "Movie" in category_info
+                else Media.TVSHOW if "TV" in category_info
+                else "None")
             duration = tr('td:first span').text()
             thumbnail = tr('td:first a').attr('style').replace(
                 'background-image:url(', '').replace(');', '')
