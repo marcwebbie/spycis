@@ -236,10 +236,10 @@ http://www.duckstreaming.com/lm0fhyxsrhxj                    [French]        sub
 
 #### Option `--play`: Regarder une vidéo
 
-##### Regarder "Le Roi Lion" avec pattern `flv` sur vlc:
+##### Regarder "Le Roi Lion" sur vlc:
 
 ```bash
-spycis --play flv -p 30 "The Lion King" 
+spycis --play -p 30 "The Lion King" 
 ```
 
 ###### Example output:
@@ -251,44 +251,46 @@ VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 [0x2273048] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
 ```
 
-##### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4 sur mplayer:
+#### Option `--player`: Changer le lecteur video
+
+##### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" sur mplayer:
 
 ```bash
-spycis --play mp4 --player mplayer -r s05e07 "vampire diaries" 
+spycis --play --player mplayer -r s05e07 "vampire diaries" 
 ```
 
 #### Option `--download`: Télécharger une vidéo
 
-##### Télecharge l'episode 7 de saison 5 de "Vampire Diaries" que contient le pattern mp4:
+##### Télecharge l'episode 7 de saison 5 de "Vampire Diaries":
 
 ```bash
-spycis --download mp4 -r s05e07 "vampire diaries" 
+spycis --download -r s05e07 "vampire diaries" 
 ```
 
 #### Option `--stream`: Streaming d'une video
 
-##### Faire streaming du film 'Roi Lion' pour le pattern `.`(n'importe quel `raw url`):
+##### Faire streaming du film 'Roi Lion':
 
 ```bash
-spycis --stream . -p 30 "lion king" 
+spycis --stream -p 30 "lion king" 
 ```
 
-##### Faire streaming de l'episode 7 de saison 5 de "Vampire Diaries" pour le pattern `.`(n'importe quel `raw url`):
+##### Faire streaming de l'episode 7 de saison 5 de "Vampire Diaries":
 
 ```bash
-spycis --stream . -r s05e07 "vampire diaries" 
+spycis --stream -r s05e07 "vampire diaries" 
 ```
 
-###### Fait du streaming d'une `raw url` pour le pattern `.`(n'importe quel `raw url`)
+###### Faire du streaming d'une `raw url`:
 
 ```bash
-spycis --stream . http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
+spycis --stream http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
 ```
 
-##### Fait du streaming d'une `stream url` pour le pattern `.`(n'importe quel `raw url`):
+##### Faire du streaming d'une `stream url`:
 
 ```bash
-spycis --stream . http://embed.nowvideo.sx/embed.php?v=5fd0e2c91f94f
+spycis --stream http://embed.nowvideo.sx/embed.php?v=5fd0e2c91f94f
 ```
 
 ###### Exemple output:
@@ -305,7 +307,7 @@ VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 ##### Utiliser pattern pour stream de la version francaise de under the dome s01e01 sur le site `loveserie`:
 
 ```bash
-spycis --site loveserie --stream FRENCH -r s01e01 "under the dome"
+spycis --site loveserie --stream --pattern FRENCH -r s01e01 "under the dome" 
 ```
 
 ###### Exemple output:
@@ -322,19 +324,19 @@ Glissez les sous-titres pour 'Download.Under.The.Dome.S01E01.FRENCH.BDRip.XviD.M
 ##### Fait du streaming de l'episode 7 de saison 5 de "Vampire Diaries" avec sous-titres:
 
 ```bash
-spycis --stream . --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries" 
+spycis --stream --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries" 
 ```
 
 ##### Fait du streaming d'une raw url avec sous-titres:
 
 ```bash
-spycis --stream . --subtitles vampire_soustitres.srt http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
+spycis --stream --subtitles vampire_soustitres.srt http://s63.coolcdn.ch/dl/59fd759b1e855a45d2ab057ed55dd.mp4
 ```
 
 ##### Fait du streaming d'un fichier local avec sous-titres:
 
 ```bash
-spycis --stream . --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
+spycis --stream --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
 ```
 
 #### Option `--stream-port`: Streaming d'une video sur une port specifié
@@ -342,7 +344,7 @@ spycis --stream . --subtitles messoustitres.srt /home/user/Videos/ma_video_local
 ##### Faire streaming du film 'Roi Lion' sur la porte `9000`. __note__: La porte par default c'est la 8080:
 
 ```bash
-spycis --stream . --stream-port 9000 -p 30 "lion king" 
+spycis --stream --stream-port 9000 -p 30 "lion king" 
 ```
 
 ###### Exemple output:

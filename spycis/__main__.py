@@ -104,16 +104,16 @@ def get_args():
                        "specifié la positon¹. ex: `-p 2 -r s02e31`")
 
     group2 = aparser.add_argument_group('Optionnel bonus')
-    group2.add_argument("--play", metavar="PATTERN",
+    group2.add_argument("--play", action="store_true",
                         help="Executer le premier fichier que "
                         "match le pattern. ex: `--play mp4`")
     group2.add_argument("--player", default="vlc",
                         help="Choisir le player pour l'option play "
                         "ex: `--player amarok`")
-    group2.add_argument("--download", metavar="PATTERN",
+    group2.add_argument("--download", action="store_true",
                         help="Télécharge le premier fichier "
                         "que match le pattern. ex: `--download mp4`")
-    group2.add_argument("--stream", metavar="PATTERN",
+    group2.add_argument("--stream", action="store_true",
                         help="Ouvre streaming sur la porte specifié. "
                         "ex: `--stream 8080`")
     group2.add_argument("--stream-port", default=8080, type=int,
@@ -122,6 +122,9 @@ def get_args():
     group2.add_argument("--subtitles",
                         help="Ouvre streaming pour les soustitres "
                         "ex: `--subtitles mes_sous_titres.srt`")
+    group2.add_argument("--pattern", default=".",
+                        help="Specifie le pattern pour trier "
+                        "ex: `--pattern .mp4`")
 
     group3 = aparser.add_argument_group('Optionnel avancée')
     group3.add_argument("-v", "--verbose", action="count",
@@ -288,14 +291,14 @@ def run(args=get_args()):
 
     # Bonus options
     if args.download:
-        pattern = args.download
+        pattern = args.pattern
         downloader.download(pattern=pattern,)
     elif args.play and downloader.info_list:
-        pattern = args.play
+        pattern = args.pattern
         player = args.player
         downloader.play(pattern=pattern, player=player)
     elif args.stream and downloader.info_list:
-        pattern = args.stream
+        pattern = args.pattern
         stream_port = args.stream_port
         subtitles = args.subtitles
         downloader.stream(pattern=pattern,
