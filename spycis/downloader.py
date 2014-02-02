@@ -62,6 +62,8 @@ class Downloader(object):
     def _extract_worker(self):
         while True:
             url = self.extraction_queue.get()
+            print(url)
+            print(type(url))
             logging.debug("init extracting file url from: {}".format(url))
 
             extractor = next((e for e in self.extractor_list if e.is_valid_url(url)), None)

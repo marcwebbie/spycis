@@ -192,7 +192,7 @@ def run(args=get_args()):
         code = args.raw_urls if args.raw_urls else args.stream_urls
         streams = site.get_streams(url, code=code)
         if args.raw_urls:
-            downloader.extract(streams)
+            downloader.extract(s.url for s in streams)
         else:
             for stream in streams:
                 fstr = "{:<60} {:<25} subtitles={}".format(
