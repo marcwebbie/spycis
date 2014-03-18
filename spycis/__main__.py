@@ -234,7 +234,8 @@ def run(args=get_args()):
     else:
         medias = site.search(args.query)
         try:
-            chosen_media_url = medias[args.position - 1].url
+            position = args.position - 1 if args.position != 0 else args.position
+            chosen_media_url = medias[position].url
         except IndexError:
             logging.error("Not a valid position")
             return None
