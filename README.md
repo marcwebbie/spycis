@@ -27,7 +27,7 @@ pip uninstall spycis
 
 ### Options de spycis basiques
 
-les options de Spycis sont activé par des "switches" de terminal au formats: `-s value` ou longue `--switch value`
+Les options de Spycis sont activé par des "switches" de terminal au formats: `-s value` ou longue `--switch value`
 
 + `-r` ou `--raw-urls`: Retourne les raw urls pour le code ou specifié. ex: `-r s02e31` ou `--raw-urls  s02e31`
 + `-s` ou `--stream-urls`: Retourne les stream urls pour le code specifié. ex: `-s s02e31` ou `--stream-urls  s02e31`
@@ -48,7 +48,7 @@ Les options des bonus sont toujours utilisées avec ses noms longs pour ne pas c
 
 + `--site-list`: Voir la liste de sites disponibles. ex: `--site-lite`
 + `--site`: Changer le site de recherche. ex: `--site sitename`
-+ `-v`, `-vv` ou `--verbose`: Activer le mode débogage. ex: -v, `--verbose`, pour plus de debogage `-vv`: 
++ `-v`, `-vv` ou `--verbose`: Activer le mode débogage. ex: -v, `--verbose`, pour plus de debogage `-vv`:
 + `--workers`: Nombre des threads pour l'extraction des urls ex: `--workers 20`
 + `--version`: Voir la version de spycis. ex: `--version`
 
@@ -59,7 +59,7 @@ Les options des bonus sont toujours utilisées avec ses noms longs pour ne pas c
 ## Tutoriel
 
 Le tutoriel est divisé en parties:
- 
+
 1. Les recherches basiques par urls.
 2. Les raccourcis de recherche par codes.
 3. Les raccourcis de recherche par positions. (_idéal pour les films, ou les ambiguitées_)
@@ -211,7 +211,7 @@ spycis --site-list
 ###### Exemple output:
 
 ```bash
-List of available sites: 
+List of available sites:
   loveserie
   example
   tubeplus
@@ -220,7 +220,7 @@ List of available sites:
 ##### Faire recherche sur un site alternatif:
 
 ```bash
-# Rechercher sur le site "loveserie" les stream urls pour le épisode `s01e08` de deadwood au 
+# Rechercher sur le site "loveserie" les stream urls pour le épisode `s01e08` de deadwood au
 spycis --site loveserie -s s01e08 deadwood
 ```
 
@@ -239,7 +239,7 @@ http://www.duckstreaming.com/lm0fhyxsrhxj                    [French]        sub
 ##### Regarder "Le Roi Lion" sur vlc:
 
 ```bash
-spycis --play -p 30 "The Lion King" 
+spycis --play -p 30 "The Lion King"
 ```
 
 ###### Example output:
@@ -256,7 +256,7 @@ VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 ##### Regarder l’épisode 7 de saison 5 de "Vampire Diaries" sur mplayer:
 
 ```bash
-spycis --play --player mplayer -r s05e07 "vampire diaries" 
+spycis --play --player mplayer -r s05e07 "vampire diaries"
 ```
 
 #### Option `--download`: Télécharger une vidéo
@@ -264,7 +264,7 @@ spycis --play --player mplayer -r s05e07 "vampire diaries"
 ##### Télecharge l'episode 7 de saison 5 de "Vampire Diaries":
 
 ```bash
-spycis --download -r s05e07 "vampire diaries" 
+spycis --download -r s05e07 "vampire diaries"
 ```
 
 #### Option `--stream`: Streaming d'une video
@@ -272,13 +272,13 @@ spycis --download -r s05e07 "vampire diaries"
 ##### Faire streaming du film 'Roi Lion':
 
 ```bash
-spycis --stream -p 30 "lion king" 
+spycis --stream -p 30 "lion king"
 ```
 
 ##### Faire streaming de l'episode 7 de saison 5 de "Vampire Diaries":
 
 ```bash
-spycis --stream -r s05e07 "vampire diaries" 
+spycis --stream -r s05e07 "vampire diaries"
 ```
 
 ###### Faire du streaming d'une `raw url`:
@@ -297,7 +297,7 @@ spycis --stream http://embed.nowvideo.sx/embed.php?v=5fd0e2c91f94f
 
 ```bash
 http://s32.coolcdn.ch/dl/e4ed66cb4caee3a4d66a46e524d9c133/52cdcc05/ff9ffca598779e196b4e5190f74f554189.flv
-Glissez les sous-titres pour 'the.vampire.diaries.s02e03.dvdrip.xvidreward' ici : 
+Glissez les sous-titres pour 'the.vampire.diaries.s02e03.dvdrip.xvidreward' ici :
  * Chosen file: http://s32.coolcdn.ch/dl/e4ed66cb4caee3a4d66a46e524d9c133/52cdcc05/ff9ffca598779e196b4e5190f74f554189.flv
  * Streaming from: 192.168.25.8:8080
 VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
@@ -307,7 +307,7 @@ VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
 ##### Utiliser pattern pour stream de la version francaise de under the dome s01e01 sur le site `loveserie`:
 
 ```bash
-spycis --site loveserie --stream --pattern FRENCH -r s01e01 "under the dome" 
+spycis --site loveserie --stream --pattern FRENCH -r s01e01 "under the dome"
 ```
 
 ###### Exemple output:
@@ -324,7 +324,7 @@ Glissez les sous-titres pour 'Download.Under.The.Dome.S01E01.FRENCH.BDRip.XviD.M
 ##### Fait du streaming de l'episode 7 de saison 5 de "Vampire Diaries" avec sous-titres:
 
 ```bash
-spycis --stream --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries" 
+spycis --stream --subtitles vampire_soustitres.srt -r s05e07 "vampire diaries"
 ```
 
 ##### Fait du streaming d'une raw url avec sous-titres:
@@ -344,7 +344,7 @@ spycis --stream --subtitles messoustitres.srt /home/user/Videos/ma_video_local.m
 ##### Faire streaming du film 'Roi Lion' sur la porte `9000`. __note__: La porte par default c'est la 8080:
 
 ```bash
-spycis --stream --stream-port 9000 -p 30 "lion king" 
+spycis --stream --stream-port 9000 -p 30 "lion king"
 ```
 
 ###### Exemple output:
@@ -352,7 +352,7 @@ spycis --stream --stream-port 9000 -p 30 "lion king"
 ```bash
 http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld7dspz4u/video.flv
 http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivhj2d7mi/video.flv
-Glissez les sous-titres pour 'zpkcdcd8e0hs.flv' ici : 
+Glissez les sous-titres pour 'zpkcdcd8e0hs.flv' ici :
  * Chosen file: http://50.7.164.218:8182/46or2vj77su4tqukwyq3nbzwlkn5arxroclhufzikh4jpmzwrld7dspz4u/video.flv
  * Streaming from: 192.168.25.8:9000
 VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
@@ -397,4 +397,4 @@ Spycis fournit trois types de urls
 
 + __media urls__: L’adresse de la page sur le site ou spycis a trouvé le media(série/film/musique). Ces pages ont normalement l'information sur le media aussi comme plusieurs stream urls. exemple: `http://www.filmesonlinegratis.net/assistir-12-anos-de-escravidao-legendado-online.html`
 + __stream urls__: L’adresse de la page d'un site de streaming. Sur ces pages nous pouvons regarder les vidéos en ligne sans avoir besoin de télécharger la vidéo. les sites 'youtube', 'dailymotion', 'vimeo' sont des sites de streaming. example de stream url : `http://www.youtube.com/watch?v=VAJ8wZ97x94`
-+ __raw urls__: L’adresse du vrai fichier, avec cette url nous pouvons télécharger la vidéo sur l'ordinateur. Ces liens sont normalement cachés du publique(pour faire les utilisateur régarder les videos sur leur stream urls). exemple de une raw url: `http://50.7.161.75:182/d/z5sj6h3iljrwuxim4y6sl4qu6gqlucqvfdxuelpkzxvacn37sxj6oc74/video.mp4` 
++ __raw urls__: L’adresse du vrai fichier, avec cette url nous pouvons télécharger la vidéo sur l'ordinateur. Ces liens sont normalement cachés du publique(pour faire les utilisateur régarder les videos sur leur stream urls). exemple de une raw url: `http://50.7.161.75:182/d/z5sj6h3iljrwuxim4y6sl4qu6gqlucqvfdxuelpkzxvacn37sxj6oc74/video.mp4`
