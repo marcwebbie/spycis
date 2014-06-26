@@ -23,6 +23,7 @@ class Reporter(object):
 
     @staticmethod
     def sizeof_fmt(num):
+        '''Convert byte size'''
         for x in ['bytes', 'K', 'M', 'G', 'T', 'P']:
             if num < 1024.0:
                 return "%3.1f %s" % (num, x)
