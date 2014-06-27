@@ -118,7 +118,7 @@ class Downloader(object):
             ]
             info = random.choice(matched_infos)
         except IndexError:
-            logging.warning("streaming: No raw url matched pattern: '{}'".format(pattern.pattern))
+            logging.error("streaming: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
         else:
             video_path = info['url']
