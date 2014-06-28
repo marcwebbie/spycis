@@ -154,7 +154,7 @@ class Downloader(object):
             ]
             info = random.choice(matched_infos)
         except IndexError:
-            logging.warning("play: No raw url matched pattern: '{}'".format(pattern.pattern))
+            logging.error("play: No raw url matched pattern: '{}'".format(pattern.pattern))
             return None
         else:
             logging.debug('Chosen info to play: {}'.format(info))
