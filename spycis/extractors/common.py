@@ -64,6 +64,7 @@ class BaseExtractor(object):
                 return match.group('id')
 
     def get_host(self, url):
+        """Return the host address for a given stream site extractor"""
         if self.is_valid_url(url):
             match = re.match(self.regex_url, url)
             if match:
