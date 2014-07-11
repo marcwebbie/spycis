@@ -15,41 +15,6 @@ from spycis import extractors
 from spycis.utils import Queue, urlparse
 
 
-class Reporter(object):
-
-    last_time = time.time()
-    last_length = 0
-    last_dlrate = "0 K"
-
-    @staticmethod
-    def sizeof_fmt(num):
-        '''Convert byte size'''
-        for x in ['bytes', 'K', 'M', 'G', 'T', 'P']:
-            if num < 1024.0:
-                return "%3.1f %s" % (num, x)
-            num /= 1024.0
-
-    @staticmethod
-    def report(curr_size, total_size):
-        if (time.time() - Reporter.last_time) > 1:
-            done = int(50 * curr_size / total_size)
-            percent = int(curr_size * 100 / total_size)
-            bytes = (curr_size - Reporter.last_length) / (time.time() - Reporter.last_time)
-            Reporter.last_dlrate = Reporter.sizeof_fmt(bytes)
-            Reporter.last_time = time.time()
-            Reporter.last_length = curr_size
-
-            report_line = "\r [{0}{1}] {2:>3}% {3:>6}B ({4}/s)    \r".format(
-                '=' * done,
-                ' ' * (50 - done),
-                percent,
-                Reporter.sizeof_fmt(total_size),
-                Reporter.last_dlrate,
-            )
-            sys.stdout.write(report_line)
-            sys.stdout.flush()
-
-
 class Downloader(object):
 
     def __init__(self, workers=0, raw_url_info=False):
