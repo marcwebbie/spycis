@@ -166,8 +166,6 @@ def clean_search_by_code(func):
 
 @clean_search_by_code
 def run(args=get_args()):
-    # print(args)
-
     logger = get_logger()
     if args.verbose:
         logger.setLevel(logging.DEBUG)
