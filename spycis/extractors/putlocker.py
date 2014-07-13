@@ -17,12 +17,15 @@ class PutlockerExtractor(BaseExtractor):
 
     def __init__(self):
         super(PutlockerExtractor, self).__init__()
-        self.host_list = ["putlocker.com"]
-        self.holder_url = "http://www.putlocker.com/embed/{}"
+        self.host_list = ["putlocker.com", "firedrive.com"]
+        self.holder_url = "http://www.firedrive.com/embed/{}"
         self.regex_url = re.compile(
             r'(http|https)://(www\.)?(?P<host>putlocker\.(com|ws))/(embed/|file/)(?P<id>[\w]+)')
-        self.example_urls = ['http://www.putlocker.com/embed/AF115B1580D9C8F1',
+        self.example_urls = ['http://www.putlocker.com/embed/CED642655B8FAA10',
                              'http://www.putlocker.ws/file/AF115B1580D9C8F1']
+        self.test_info = {
+            "url": "http://www.putlocker.com/embed/CED642655B8FAA10"
+        }
 
     def extract(self, video_id_or_url):
         if self.regex_url.match(video_id_or_url):
@@ -38,6 +41,7 @@ class PutlockerExtractor(BaseExtractor):
             return None
 
         pq = PyQuery(response.text)
+
         params = {}
         params['fuck_you'] = pq('form input[name=fuck_you]').attr('value')
         params['confirm'] = pq('form input[name=confirm]').attr('value')
