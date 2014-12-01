@@ -15,14 +15,14 @@ Installer
 
     pip install https://bitbucket.org/marcwebbie/spycis/get/master.zip
 
-Mètre-à-jour
+Update
 ~~~~~~~~~~~~
 
 .. code:: python
 
     pip install -U https://bitbucket.org/marcwebbie/spycis/get/master.zip
 
-Désinstaller
+Uninstall
 ~~~~~~~~~~~~
 
 .. code:: python
@@ -35,53 +35,53 @@ Options de ligne de commande de spycis
 Options de spycis basiques
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Les options de Spycis sont activé par des "switches" de terminal au
+Les options de Spycis sont active par des "switches" de terminal au
 formats: ``-s value`` ou longue ``--switch value``
 
 -  ``-r`` ou ``--raw-urls``: Retourne les raw urls pour le code ou
-   specifié. ex: ``-r s02e31`` ou ``--raw-urls  s02e31``
+   specifie. ex: ``-r s02e31`` ou ``--raw-urls  s02e31``
 -  ``-s`` ou ``--stream-urls``: Retourne les stream urls pour le code
-   specifié. ex: ``-s s02e31`` ou ``--stream-urls  s02e31``
--  ``-p`` ou ``--position``: Options utilisé avec ``-r`` ou ``-s`` pour
-   specifié la positon¹. ex: ``-p 2 -r s02e31``
+   specifie. ex: ``-s s02e31`` ou ``--stream-urls  s02e31``
+-  ``-p`` ou ``--position``: Options utilise avec ``-r`` ou ``-s`` pour
+   specifie la positon[*]. ex: ``-p 2 -r s02e31``
 
 Options bonus
 ~~~~~~~~~~~~~
 
-Les options des bonus sont toujours utilisées avec ses noms longs pour
+Les options des bonus sont toujours utilisees avec ses noms longs pour
 ne pas confondre avec les options basiques. Les bonus ne retournent pas
-des urls, ils font des actions sur les ``raw urls`` trouvées. Donc, si
-spycis n'a pas trouvé des ``raw urls`` aucune action sera faite.
+des urls, ils font des actions sur les ``raw urls`` trouvees. Donc, si
+spycis n'a pas trouve des ``raw urls`` aucune action sera faite.
 
--  ``--download``: Télécharge le premier fichier au pattern² dans les
+-  ``--download``: Telecharge le premier fichier au pattern[2] dans les
    ``raw urls`` extraites. ex: ``--download vostf``
--  ``--play``: Executer le premier fichier au pattern² spécifié dans les
+-  ``--play``: Executer le premier fichier au pattern[2] specifie dans les
    ``raw urls`` extraites. ex: ``--play vostf``
 -  ``--player``: Choisir le player pour l'option play ex:
    ``--player amarok``
 -  ``--subtitles``: Ouvre les sous-titres pour streaming ex:
    ``--subtitles mes_sous_titres.srt``
--  ``--stream``: Ouvre streaming avec fichier choisi par pattern²
-   specifié. ex: ``--stream video.flv``
+-  ``--stream``: Ouvre streaming avec fichier choisi par pattern[2]
+   specifie. ex: ``--stream video.flv``
 -  ``--stream-port``: Change la port pour le streaming. ex:
    ``--stream-port 8080``
 
-Options avancées
+Options avancees
 ~~~~~~~~~~~~~~~~
 
 -  ``--site-list``: Voir la liste de sites disponibles. ex:
    ``--site-lite``
 -  ``--site``: Changer le site de recherche. ex: ``--site sitename``
--  ``-v``, ``-vv`` ou ``--verbose``: Activer le mode débogage. ex: -v,
+-  ``-v``, ``-vv`` ou ``--verbose``: Activer le mode debogage. ex: -v,
    ``--verbose``, pour plus de debogage ``-vv``:
 -  ``--workers``: Nombre des threads pour l'extraction des urls ex:
    ``--workers 20``
 -  ``--version``: Voir la version de spycis. ex: ``--version``
 
-    ¹ La position est imprimé au terminal dans les résultats de
-    recherches avec les valeurs entre accolades carrés ``[ ]``
+    [*] La position est imprime au terminal dans les resultats de
+    recherches avec les valeurs entre accolades carres ``[ ]``
 
-    ² Les patterns sont des expressions regulières, ``.`` veut dire
+    [2] Les patterns sont des expressions regulieres, ``.`` veut dire
     tout, alors que ``mp4$`` veut dire que doit se terminer par ``mp4``
     pour plus d'info lire ici: `tutoriel
     regex <http://lumadis.be/regex/tuto_pcre.php>`__
@@ -89,20 +89,20 @@ Options avancées
 Tutoriel
 --------
 
-Le tutoriel est divisé en parties:
+Le tutoriel est divise en parties:
 
 1. Les recherches basiques par urls.
 2. Les raccourcis de recherche par codes.
-3. Les raccourcis de recherche par positions. (*idéal pour les films, ou
-   les ambiguitées*)
+3. Les raccourcis de recherche par positions. (*ideal pour les films, ou
+   les ambiguitees*)
 4. Les recherches par sites.
 5. Les options bonus.
-6. Les options avancées.
+6. Les options avancees.
 
 1. Les recherches basiques par urls
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Recherche de série ou film par titre¹. Imprime: la position dans ``[...]``, la categorie, le titre, ç'année, le ``media url``:
+Recherche de serie ou film par titre[*]. Imprime: la position dans ``[...]``, la categorie, le titre, c'annee, le ``media url``:
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -118,7 +118,7 @@ Exemple output:
     [1]    ['film']      'The Mentalist'                                [2004] (http://www.tubeplus.me/player/558406/)
     [2]    ['film']      'The Mentalist'                                [2011] (http://www.tubeplus.me/player/2086823/)
 
-    ¹ Attention: Pour les titres avec des spaces utilises des guillement
+    [*] Attention: Pour les titres avec des spaces utilises des guillement
     ou doubles guillements. ex: ``spycis "the mentalist"``
 
 Obtenir les ``stream urls`` pour une ``media url``:
@@ -139,8 +139,8 @@ Exemple output:
     http://www.vidbux.com/embed-9p3igt5r8k36.html
 
     \*: **Attention** Cette commande ne marche que pour les films, pour
-    obtenir des ``raw urls`` pour les séries, le code épisode doit être
-    informé avec l'option --raw-url. ex: ``-p 30 -r s01e01``.
+    obtenir des ``raw urls`` pour les series, le code episode doit etre
+    informe avec l'option --raw-url. ex: ``-p 30 -r s01e01``.
 
 Obtenir les ``raw urls`` pour une ``stream url``:
 '''''''''''''''''''''''''''''''''''''''''''''''''
@@ -160,9 +160,9 @@ Exemple output :
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Les raccourcis de recherche par code sans l'option position va toujours
-prendre le première position dans les recherches.
+prendre le premiere position dans les recherches.
 
-Obtenir les ``stream urls`` pour la position par defaul(\ ``0``) dans la recherche avec le code épisode ``s02e03``:
+Obtenir les ``stream urls`` pour la position par defaul(\ ``0``) dans la recherche avec le code episode ``s02e03``:
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -183,7 +183,7 @@ Exemple output:
     http://vidbull.com/embed-37iq0bewngk5-650x328.html           [English]       subtitles=[]
     http://vidbull.com/embed-pxm4uio4fe9a-650x328.html           [English]       subtitles=[]
 
-Obtenir les ``raw urls`` pour la position par defaul(\ ``0``) dans la recherche avec le code épisode ``s02e03``:
+Obtenir les ``raw urls`` pour la position par defaul(\ ``0``) dans la recherche avec le code episode ``s02e03``:
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -206,7 +206,7 @@ Exemple output:
 3. Les racourcis de recherche par positions.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Obtenir les ``stream urls`` pour la position de recherche ``1`` avec le code épisode ``s01e16``:
+Obtenir les ``stream urls`` pour la position de recherche ``1`` avec le code episode ``s01e16``:
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -224,7 +224,7 @@ Exemple output:
     http://gorillavid.in/embed-iabh7e6bchgq-650x400.html         [English]       subtitles=[]
     http://gorillavid.in/embed-30y7ahav048u-650x400.html         [English]       subtitles=[]
 
-Obtenir les ``raw urls`` pour la position de recherche ``1`` avec le code épisode ``s01e16``.
+Obtenir les ``raw urls`` pour la position de recherche ``1`` avec le code episode ``s01e16``.
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -256,8 +256,8 @@ Exemple output:
     http://50.7.164.218:8182/46or2vr77su4tqukwyq3nbzwllazlxk4tcokrqmk6bg3q3nlbivlfet7mi/video.flv
 
     \*: **Attention** Cette commande ne marche que pour les films, pour
-    obtenir des ``raw urls`` pour les séries, le code épisode doit être
-    informé avec l'option --raw-url. ex: ``-p 30 -r s01e01``.
+    obtenir des ``raw urls`` pour les series, le code episode doit etre
+    informe avec l'option --raw-url. ex: ``-p 30 -r s01e01``.
 
 4. Les recherches par site
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -284,7 +284,7 @@ Faire recherche sur un site alternatif:
 
 .. code:: bash
 
-    # Rechercher sur le site "loveserie" les stream urls pour le épisode `s01e08` de deadwood au
+    # Rechercher sur le site "loveserie" les stream urls pour le episode `s01e08` de deadwood au
     spycis --site loveserie -s s01e08 deadwood
 
 Exemple output:
@@ -299,7 +299,7 @@ Exemple output:
 5. Les options bonus
 ~~~~~~~~~~~~~~~~~~~~
 
-Option ``--play``: Regarder une vidéo
+Option ``--play``: Regarder une video
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Regarder "Le Roi Lion" sur vlc:
@@ -323,17 +323,17 @@ Example output:
 Option ``--player``: Changer le lecteur video
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Regarder l’épisode 7 de saison 5 de "Vampire Diaries" sur mplayer:
+Regarder l'episode 7 de saison 5 de "Vampire Diaries" sur mplayer:
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
 
     spycis --play --player mplayer -r s05e07 "vampire diaries"
 
-Option ``--download``: Télécharger une vidéo
+Option ``--download``: Telecharger une video
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Télecharge l'episode 7 de saison 5 de "Vampire Diaries":
+Telecharge l'episode 7 de saison 5 de "Vampire Diaries":
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -424,7 +424,7 @@ Fait du streaming d'un fichier local avec sous-titres:
 
     spycis --stream --subtitles messoustitres.srt /home/user/Videos/ma_video_local.mp4
 
-Option ``--stream-port``: Streaming d'une video sur une port specifié
+Option ``--stream-port``: Streaming d'une video sur une port specifie
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Faire streaming du film 'Roi Lion' sur la porte ``9000``. **note**: La porte par default c'est la 8080:
@@ -447,10 +447,10 @@ Exemple output:
     VLC media player 2.1.2 Rincewind (revision 2.1.2-0-ga4c4876)
     [0x937938] dummy interface: using the dummy interface module...
 
-6. Les options avancées
+6. Les options avancees
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Voir la version de spycis installé:
+Voir la version de spycis installe:
 '''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -478,7 +478,7 @@ Executer spycis en mode verbose avec information de debogage plus approfondie av
 
     spycis -vv 'lion king'
 
-Changer le nombre de threads utilisé par ``3``:
+Changer le nombre de threads utilise par ``3``:
 '''''''''''''''''''''''''''''''''''''''''''''''
 
 .. code:: bash
@@ -490,17 +490,17 @@ Architecture de spycis
 
 Spycis fournit trois types de urls
 
--  **media urls**: L’adresse de la page sur le site ou spycis a trouvé
-   le media(série/film/musique). Ces pages ont normalement l'information
+-  **media urls**: L'adresse de la page sur le site ou spycis a trouve
+   le media(serie/film/musique). Ces pages ont normalement l'information
    sur le media aussi comme plusieurs stream urls. exemple:
    ``http://www.filmesonlinegratis.net/assistir-12-anos-de-escravidao-legendado-online.html``
--  **stream urls**: L’adresse de la page d'un site de streaming. Sur ces
-   pages nous pouvons regarder les vidéos en ligne sans avoir besoin de
-   télécharger la vidéo. les sites 'youtube', 'dailymotion', 'vimeo'
+-  **stream urls**: L'adresse de la page d'un site de streaming. Sur ces
+   pages nous pouvons regarder les videos en ligne sans avoir besoin de
+   telecharger la video. les sites 'youtube', 'dailymotion', 'vimeo'
    sont des sites de streaming. example de stream url :
    ``http://www.youtube.com/watch?v=VAJ8wZ97x94``
--  **raw urls**: L’adresse du vrai fichier, avec cette url nous pouvons
-   télécharger la vidéo sur l'ordinateur. Ces liens sont normalement
-   cachés du publique(pour faire les utilisateur régarder les videos sur
+-  **raw urls**: L'adresse du vrai fichier, avec cette url nous pouvons
+   telecharger la video sur l'ordinateur. Ces liens sont normalement
+   caches du publique(pour faire les utilisateur regarder les videos sur
    leur stream urls). exemple de une raw url:
    ``http://50.7.161.75:182/d/z5sj6h3iljrwuxim4y6sl4qu6gqlucqvfdxuelpkzxvacn37sxj6oc74/video.mp4``
