@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 with open("README.rst") as f:
     long_description = f.read()
@@ -14,8 +14,8 @@ setup(
     version=__version__,
     license='MIT',
     description='Console interface to stream websites',
-    long_description="Spycis is a python console interface to stream websites",
-    keywords=long_description,
+    long_description=long_description,
+    keywords="streaming python video download url rip convert",
     url='https://github.com/marcwebbie/spycis',
     author='Marcwebbie',
     author_email='marcwebbie@gmail.com',
