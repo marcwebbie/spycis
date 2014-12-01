@@ -95,7 +95,7 @@ def get_args():
     group.add_argument("-s", "--stream-urls", metavar="sSSeEE",
                        help="Retourne les stream urls pour le code"
                        ". ex: `-s s02e31` ou `--stream-urls  s02e31`")
-    group.add_argument("-p", "--position", type=int, default=0,
+    group.add_argument("-p", "--position", type=int, default=1,
                        help="Options utilisé avec `-r` ou `-s` pour "
                        "specifié la positon¹. ex: `-p 2 -r s02e31`")
 
