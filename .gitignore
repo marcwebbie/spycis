@@ -33,3 +33,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Other
+*.DS_store
+/env/
+/.python-version
+/build/
