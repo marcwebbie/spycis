@@ -13,14 +13,14 @@ Installer
 
 .. code:: python
 
-    pip install https://bitbucket.org/marcwebbie/spycis/get/master.zip
+    pip install spycis
 
 Update
 ~~~~~~~~~~~~
 
 .. code:: python
 
-    pip install -U https://bitbucket.org/marcwebbie/spycis/get/master.zip
+    pip install -U spycis
 
 Uninstall
 ~~~~~~~~~~~~
