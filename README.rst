@@ -64,7 +64,7 @@ Quickstart
 
 
 *************
-License (MIT)
+License (WTFPL)
 *************
 
 | DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
