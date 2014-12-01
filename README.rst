@@ -62,6 +62,9 @@ Quickstart
    # requires: vlc
    spycis "Breaking Bad" -r s04e06 --play --subtitles /path/to/subtitles.srt
 
+   # list available sites
+   # spycis --site-list
+
 
 *************
 License (WTFPL)
