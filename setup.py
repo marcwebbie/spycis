@@ -4,8 +4,7 @@ from setuptools import setup, find_packages
 
 __version__ = "0.0.1-dev13"
 
-long_description = """Spycis is a python console interface to stream websites
-"""
+long_description = """Spycis is a python console interface to stream websites"""
 
 setup(
     name='spycis',
@@ -23,7 +22,6 @@ setup(
     test_suite='tests.test',
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Development Status :: Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
