@@ -48,19 +48,19 @@ Quickstart
 
    # downloading episode 6 from season 4 of Breaking Bad
    # requires: wget
-   spycis "Breaking Bad" -s s04e06 --download
+   spycis "Breaking Bad" -r s04e06 --download
 
    # stream episode 6 from season 4 of Breaking Bad
    # requires: vlc
-   spycis "Breaking Bad" -s s04e06 --stream
+   spycis "Breaking Bad" -r s04e06 --stream
 
    # play episode 6 from season 4 of Breaking Bad
    # requires: vlc
-   spycis "Breaking Bad" -s s04e06 --play
+   spycis "Breaking Bad" -r s04e06 --play
 
    # play episode 6 from season 4 of Breaking Bad with subtitles
    # requires: vlc
-   spycis "Breaking Bad" -s s04e06 --play --subtitles /path/to/subtitles.srt
+   spycis "Breaking Bad" -r s04e06 --play --subtitles /path/to/subtitles.srt
 
 
 *************
