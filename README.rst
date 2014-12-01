@@ -13,23 +13,54 @@ Installing
 Installer
 =========
 
-.. code:: python
+.. code:: bash
 
     pip install spycis
 
 Update
 ======
 
-.. code:: python
+.. code:: bash
 
     pip install -U spycis
 
 Uninstall
 =========
 
-.. code:: python
+.. code:: bash
 
     pip uninstall spycis
+
+
+Quickstart
+==========
+
+.. code:: bash
+
+   # searching for available streams
+   spycis "Breaking Bad"
+
+   # getting stream url for episode 6 from season 4 of Breaking Bad
+   spycis "Breaking Bad" -s s04e06
+
+   # getting download url for episode 6 from season 4 of Breaking Bad
+   spycis "Breaking Bad" -r s04e06
+
+   # downloading episode 6 from season 4 of Breaking Bad
+   # requires: wget
+   spycis "Breaking Bad" -s s04e06 --download
+
+   # stream episode 6 from season 4 of Breaking Bad
+   # requires: vlc
+   spycis "Breaking Bad" -s s04e06 --stream
+
+   # play episode 6 from season 4 of Breaking Bad
+   # requires: vlc
+   spycis "Breaking Bad" -s s04e06 --play
+
+   # play episode 6 from season 4 of Breaking Bad with subtitles
+   # requires: vlc
+   spycis "Breaking Bad" -s s04e06 --play --subtitles /path/to/subtitles.srt
 
 
 *************
