@@ -2,6 +2,14 @@
 Spycis: Get url from stream websites
 ####################################
 
+.. image:: https://travis-ci.org/marcwebbie/spycis.svg
+   :target: https://travis-ci.org/marcwebbie/spycis
+.. image:: https://coveralls.io/repos/marcwebbie/spycis/badge.png
+   :target: https://coveralls.io/r/marcwebbie/spycis
+.. image:: https://landscape.io/github/marcwebbie/spycis/master/landscape.svg
+   :target: https://landscape.io/github/marcwebbie/spycis/master
+   :alt: Code Health
+
 `Spycis <http://github.com/marcwebbie/spycis>`_ is a python console interface to stream websites. With spycis can *search*, *download*, *stream locally*, *watch* streaming site videos with only one command.
 
 ************
