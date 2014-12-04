@@ -165,7 +165,10 @@ def clean_search_by_code(func):
 
 
 @clean_search_by_code
-def run(args=get_args()):
+def run(args=None):
+    if not args:
+        args = get_args()
+
     logger = get_logger()
     if args.verbose:
         logger.setLevel(logging.DEBUG)
@@ -302,6 +305,7 @@ def run(args=get_args()):
         downloader.stream(pattern=pattern,
                           stream_port=stream_port,
                           subtitles=subtitles)
+
 if __name__ == '__main__':
     try:
         run()
