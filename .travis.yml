@@ -12,5 +12,5 @@ install:
   - pip install coveralls
 script:
   coverage run --source=spycis tests/test.py
-after_success:
+after_script:
   coveralls
