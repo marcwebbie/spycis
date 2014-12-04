@@ -1,41 +1,38 @@
-######
-Spycis
-######
+####################################
+Spycis: Get url from stream websites
+####################################
 
-<*Spycis* http://github.com/marcwebbie/spycis>_ is a python console interface to stream websites. With spycis
-we can *search*, *download*, *stream locally*, *watch* streaming site
-videos with only one command
+`*Spycis* <http://github.com/marcwebbie/spycis>`_ is a python console interface to stream websites. With spycis can *search*, *download*, *stream locally*, *watch* streaming site videos with only one command.
 
 ************
 Installing
 ************
 
-Installer
+Install
 =========
 
-.. code:: bash
+.. code-block:: bash
 
     pip install spycis
 
 Update
 ======
 
-.. code:: bash
+.. code-block:: bash
 
     pip install -U spycis
 
 Uninstall
 =========
 
-.. code:: bash
+.. code-block:: bash
 
     pip uninstall spycis
-
 
 Quickstart
 ==========
 
-.. code:: bash
+.. code-block:: bash
 
    # searching for available streams
    spycis "Breaking Bad"
@@ -66,14 +63,37 @@ Quickstart
    # spycis --site-list
 
 
-*************
+***************
+Writing plugins
+***************
+
+Wrappers
+========
+
+Wrappers are stream website scrapers. They find stream urls on the given site and return a list of Media objects representing them.
+
+- Write a module with the name of the website wrapped
+- Create a subclass `spycis.wrappers.common.BaseWrapper`
+- Drop the module into `spycis.wrappers` package
+
+Extractors
+==========
+
+Extractors find direct download url in stream urls found by Wrappers.
+
+- Write a module with the name of the stream website from where you extract urls
+- Create a subclass `spycis.wrappers.common.BaseExtractor`
+- Drop the module into `spycis.extractors` package
+
+
+***************
 License (WTFPL)
-*************
+***************
 
 | DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 |                    Version 2, December 2004
 |
-| Copyright (C) 2013 Marc Webbie <https://github.com>
+| Copyright (C) 2013-2014 Marc Webbie `<https://github.com/marcwebbie>`_
 |
 | Everyone is permitted to copy and distribute verbatim or modified
 | copies of this license document, and changing it is allowed as long
