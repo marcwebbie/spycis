@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Execute with
@@ -233,6 +232,7 @@ def run(args=None):
         logging.debug('added raw url: {}'.format(info['url']))
 
     else:
+        import pdb; pdb.set_trace()
         medias = site.search(args.query)
         try:
             position = args.position - 1 if args.position != 0 else args.position
@@ -308,7 +308,7 @@ def run(args=None):
 
 if __name__ == '__main__':
     try:
-        run()
+        run(get_args())
     except KeyboardInterrupt:
         sys.stderr.flush()
         print("")
