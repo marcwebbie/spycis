@@ -285,8 +285,8 @@ def run(args=None):
                     "[{}]".format(set_color(position, Color.YELLOW)),
                     [media.category],
                     set_color(repr("{:.42}".format(media.title)), Color.GREEN),
-                    set_color(media.year, Color.YELLOW) if media.year else None,
-                    media.url,
+                    set_color(media.year, Color.YELLOW),
+                    media.url
                 )
                 print(position_line)
 
