@@ -19,7 +19,7 @@ setup(
     url='https://github.com/marcwebbie/spycis',
     author='Marcwebbie',
     author_email='marcwebbie@gmail.com',
-    scripts=["bin/spycis", "bin/opensubtitles"],
+    scripts=["bin/spycis"],
     packages=find_packages(),
     install_requires=open('requirements.txt').readlines(),
     test_suite='tests.test',
